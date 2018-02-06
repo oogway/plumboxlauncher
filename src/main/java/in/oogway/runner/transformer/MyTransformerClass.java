@@ -1,8 +1,8 @@
 package in.oogway.runner.transformer;
 
-public class MyTransformerClass implements PBTransformer {
+public class MyTransformerClass implements Transformer {
     @Override
-    public void transform() {
+    public void run() {
         System.out.println("Transformation class obtained. " + this.getClass().getSimpleName());
     }
 }

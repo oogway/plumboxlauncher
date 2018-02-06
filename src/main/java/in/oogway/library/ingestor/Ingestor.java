@@ -1,24 +1,33 @@
 package in.oogway.library.ingestor;
 
 import com.esotericsoftware.yamlbeans.YamlException;
+import com.esotericsoftware.yamlbeans.YamlReader;
 import in.oogway.library.config.Config;
 import in.oogway.library.storage.LocalStorage;
-import in.oogway.runner.transformer.PBTransformer;
+import in.oogway.runner.transformer.Transformer;
+import org.apache.commons.io.input.CharSequenceReader;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.Reader;
 import java.util.Map;
 
-public class Ingestor extends LocalStorage{
+public class Ingestor implements LocalStorage {
+
 
     public String[] loadContent(String path)
             throws FileNotFoundException, YamlException, IllegalAccessException,
             ClassNotFoundException, InstantiationException {
-        Map yamlMap = super.readYAML(path);
+
+        byte[] bytes = read(path);
+        Reader fileReader = getReader(bytes);
+        Map yamlMap = getYAMLMap(fileReader);
+
         String type = yamlMap.get("type").toString();
         switch (type){
             case "transformation":
-                PBTransformer pbt = getTransformer("in.oogway.runner.transformer.MyTransformerClass");
-                pbt.transform();
+                Transformer pbt = getTransformer("in.oogway.runner.transformer.MyTransformerClass");
+                pbt.run();
                 break;
             case "ingestor": // Ingestor.
                 String source = yamlMap.get("source").toString();
@@ -36,12 +45,34 @@ public class Ingestor extends LocalStorage{
                 break;
         }
         return null;
-
     }
 
-    public PBTransformer getTransformer(String transClassPath)
+    public Transformer getTransformer(String transClassPath)
             throws IllegalAccessException, InstantiationException, ClassNotFoundException {
         Class act = Class.forName(transClassPath);
-        return (PBTransformer) act.newInstance();
+        return (Transformer) act.newInstance();
+    }
+
+    private Reader getReader(byte[] initialArray){
+        Reader targetReader = new CharSequenceReader(new String(initialArray));
+        try {
+            targetReader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return targetReader;
+    }
+
+    private Map getYAMLMap(Reader fileReader){
+
+        YamlReader reader = new YamlReader(fileReader);
+        Object object = null;
+        try {
+            object = reader.read();
+        } catch (YamlException e) {
+            e.printStackTrace();
+        }
+        System.out.println(object);
+        return (Map)object;
     }
 }

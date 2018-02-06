@@ -14,7 +14,5 @@ public class Main {
 
         Ingestor ingestorObj = new Ingestor();
         ingestorObj.loadContent(Config.tempPath+"/ingestor/"+ingestorFileName);
-
     }
-
 }

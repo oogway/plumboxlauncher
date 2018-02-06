@@ -1,29 +1,40 @@
 package in.oogway.library.storage;
 
-import com.esotericsoftware.yamlbeans.YamlException;
-import com.esotericsoftware.yamlbeans.YamlReader;
 import in.oogway.library.config.Config;
+import org.apache.commons.io.IOUtils;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.util.Map;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
-public class LocalStorage implements StorageDriver{
+public interface LocalStorage extends StorageDriver {
+
+    // todo private String dirPath = Config.tempPath;
 
     /**
-     * @param path YAML file path
-     * @return Map object
-     * @throws FileNotFoundException
-     * @throws YamlException
+     * @param path A file path
+     * @return byte array
+     * @throws IOException
      */
     @Override
-    public Map readYAML(String path) throws FileNotFoundException, YamlException {
-        // return new String[0];
-        // should have private method which accepts key and returns values as an array of string.
-        YamlReader reader = new YamlReader(new FileReader(path));
-        Object object = reader.read();
-        System.out.println(object);
-        Map map = (Map)object;
-        return map;
+    public default byte[] read(String path) {
+
+        File file = new File(path);
+        byte[] bytes = new byte[0];
+        try {
+            InputStream is = new FileInputStream(file);
+            bytes = IOUtils.toByteArray(is);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return bytes;
     }
+
+
+    @Override
+    public default  void write(String path, byte[] byteArray) {
+
+    }
+
 }
