@@ -1,0 +1,8 @@
+﻿sid: 1234
+source_url: 'https://abc'
+driver: jdbc
+schema: star
+other_attributes:
+  - 'attr1:  {sr_no: 1, title: name1}'
+  - 'attr2:  {sr_no: 2, title: name2}'
+type: fact

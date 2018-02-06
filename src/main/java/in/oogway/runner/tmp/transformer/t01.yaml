@@ -1,0 +1,6 @@
+﻿tid: t01
+stages:
+    - name: class1
+    - name: class2
+    - name: class3
+type: transformation
