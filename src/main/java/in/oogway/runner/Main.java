@@ -10,9 +10,9 @@ public class Main {
 
     public static void main(String[] args) throws ClassNotFoundException, FileNotFoundException,
             YamlException, InstantiationException, IllegalAccessException {
-        String ingestorFileName = "i01.yaml";
+        String ingestorFileName = "i01";
 
         Ingestor ingestorObj = new Ingestor();
-        ingestorObj.loadContent(Config.tempPath+"/ingestor/"+ingestorFileName);
+        ingestorObj.loadContent(ingestorFileName);
     }
 }

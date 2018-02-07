@@ -7,36 +7,33 @@ import in.oogway.library.storage.LocalStorage;
 import in.oogway.runner.transformer.Transformer;
 import org.apache.commons.io.input.CharSequenceReader;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.Map;
 
 public class Ingestor implements LocalStorage {
 
-
     public String[] loadContent(String path)
-            throws FileNotFoundException, YamlException, IllegalAccessException,
-            ClassNotFoundException, InstantiationException {
-
+            throws IllegalAccessException, InstantiationException, ClassNotFoundException {
         byte[] bytes = read(path);
-        Reader fileReader = getReader(bytes);
+        Reader fileReader = getFileReader(bytes);
         Map yamlMap = getYAMLMap(fileReader);
 
         String type = yamlMap.get("type").toString();
         switch (type){
-            case "transformation":
+            case "transformation": // Transformation
                 Transformer pbt = getTransformer("in.oogway.runner.transformer.MyTransformerClass");
                 pbt.run();
                 break;
             case "ingestor": // Ingestor.
                 String source = yamlMap.get("source").toString();
-                loadContent(Config.tempPath+"/source/"+source+".yaml");
+                loadContent(source );
                 String transformation = yamlMap.get("transformation").toString();
-                loadContent(Config.tempPath+"/transformer/"+transformation+".yaml");
+                loadContent(transformation);
                 break;
             default: // Source
-                // print source details.
+                // prints source details.
+                System.out.println("Printing Source File Details.");
                 System.out.println("sid - " + yamlMap.get("sid"));
                 System.out.println("source_url - " + yamlMap.get("source_url"));
                 System.out.println("driver - " + yamlMap.get("driver"));
@@ -48,12 +45,12 @@ public class Ingestor implements LocalStorage {
     }
 
     public Transformer getTransformer(String transClassPath)
-            throws IllegalAccessException, InstantiationException, ClassNotFoundException {
+            throws ClassNotFoundException, IllegalAccessException, InstantiationException {
         Class act = Class.forName(transClassPath);
         return (Transformer) act.newInstance();
     }
 
-    private Reader getReader(byte[] initialArray){
+    private Reader getFileReader(byte[] initialArray){
         Reader targetReader = new CharSequenceReader(new String(initialArray));
         try {
             targetReader.close();
@@ -64,7 +61,6 @@ public class Ingestor implements LocalStorage {
     }
 
     private Map getYAMLMap(Reader fileReader){
-
         YamlReader reader = new YamlReader(fileReader);
         Object object = null;
         try {
@@ -72,7 +68,6 @@ public class Ingestor implements LocalStorage {
         } catch (YamlException e) {
             e.printStackTrace();
         }
-        System.out.println(object);
         return (Map)object;
     }
 }
