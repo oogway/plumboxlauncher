@@ -1,16 +1,17 @@
-import in.oogway.library.ingestor.Ingestor
+import in.oogway.plumbox.launcher.library.ingestor.Ingestor
 import spock.lang.Specification
 
-import javax.ws.rs.core.Response
-
 class IngestorTest extends Specification{
-    def "loadContent"() {
-        given:
-        String ingestorFileName = "i01";
-        when:
-        Ingestor ingestorObj = new Ingestor();
-        Response response = ingestorObj.loadContent(ingestorFileName);
-        then:
-        response.getStatusInfo() == Response.Status.CREATED;
+   def "execute"() {
+       setup:
+       Ingestor.metaClass.execute = {true}
+       System.setProperty("redis_server_address", "localhost");
+       and:
+       String ingestorID = "i01";
+       def handler = new Ingestor(ingestorID);
+       when:
+       def res = handler.execute();
+       then:
+       res == true;
     }
 }

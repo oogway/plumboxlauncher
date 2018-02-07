@@ -1,58 +1,67 @@
-package in.oogway.library.ingestor;
+package in.oogway.plumbox.launcher.library.ingestor;
 
 import com.esotericsoftware.yamlbeans.YamlException;
 import com.esotericsoftware.yamlbeans.YamlReader;
-import in.oogway.library.storage.LocalStorage;
-import in.oogway.runner.transformer.Transformer;
+import in.oogway.plumbox.launcher.library.config.Config;
+import in.oogway.plumbox.launcher.library.storage.RedisStorage;
+import in.oogway.plumbox.launcher.runner.transformer.Transformer;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.CharSequenceReader;
-import org.apache.log4j.Logger;
+import redis.clients.jedis.Jedis;
 
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-
-import java.io.IOException;
-import java.io.Reader;
+import java.io.*;
+import java.util.ArrayList;
 import java.util.Map;
 
-public class Ingestor implements LocalStorage {
+public class Ingestor implements RedisStorage {
 
-    public static final org.apache.log4j.Logger LOGGER = org.apache.log4j.Logger.getLogger(Logger.class);
+    private String ingestorID;
 
-    public Response loadContent(String path)
-            throws IllegalAccessException, InstantiationException, ClassNotFoundException, IOException {
-        byte[] bytes = read(path);
-        Reader fileReader = getFileReader(bytes);
-        Map yamlMap = getYAMLMap(fileReader);
-
-        String type = yamlMap.get("type").toString();
-        switch (type){
-            case "transformation": // Transformation
-                Transformer pbt = getTransformer("in.oogway.runner.transformer.MyTransformerClass");
-                pbt.run();
-                break;
-            case "ingestor": // Ingestor.
-                String source = yamlMap.get("source").toString();
-                loadContent(source );
-                String transformation = yamlMap.get("transformation").toString();
-                loadContent(transformation);
-                break;
-            default: // Source
-                // prints source details.
-                System.out.println("Printing Source File Details.");
-                System.out.println("sid - " + yamlMap.get("sid"));
-                System.out.println("source_url - " + yamlMap.get("source_url"));
-                System.out.println("driver - " + yamlMap.get("driver"));
-                System.out.println("schema - " + yamlMap.get("schema"));
-                System.out.println("type - " + yamlMap.get("type"));
-                break;
-        }
-        return Response.status(Status.CREATED).entity("Contents loaded successfully").build();
+    public Ingestor(String id) throws IOException {
+        this.ingestorID = id;
+        redisServer();
     }
 
-    public Transformer getTransformer(String transClassPath)
+    public void execute()
+            throws ClassNotFoundException, IOException, InstantiationException, IllegalAccessException {
+
+        Map ingestor = loadContent(ingestorID);
+        String sourceId = ingestor.get("source").toString();
+        Map source = loadContent(sourceId);
+
+        // todo Printing source as of now. Stubs to be added later.
+        printData(source);
+
+        String transformationId = ingestor.get("transformation").toString();
+        Map tf = loadContent(transformationId);
+        ArrayList<Transformer> transformers = inflateTransformers((ArrayList) tf.get("stages"));
+
+        // todo Create a source object.
+        for (Transformer t:
+             transformers) {
+            t.run(); // todo input: Dataframe, output: Dataframe.
+        }
+
+        //todo Write to a sink object.
+    }
+
+
+    private Map loadContent(String id)
+            throws IllegalAccessException, InstantiationException, ClassNotFoundException, IOException {
+        byte[] bytes = read(id);
+        Reader fileReader = getFileReader(bytes);
+        return getYAMLMap(fileReader);
+    }
+
+    private ArrayList<Transformer> inflateTransformers(ArrayList<String> transformers)
             throws ClassNotFoundException, IllegalAccessException, InstantiationException {
-        Class act = Class.forName(transClassPath);
-        return (Transformer) act.newInstance();
+        ArrayList<Transformer> transformerObjs = new ArrayList<>();
+        for (String className:
+             transformers) {
+            Class act = Class.forName(className);
+            transformerObjs.add((Transformer) act.newInstance());
+        }
+        return transformerObjs;
     }
 
     private Reader getFileReader(byte[] initialArray) throws IOException {
@@ -64,8 +73,23 @@ public class Ingestor implements LocalStorage {
 
     private Map getYAMLMap(Reader fileReader) throws YamlException {
         YamlReader reader = new YamlReader(fileReader);
-        Object object = null;
-        object = reader.read();
+        Object object = reader.read();
         return (Map)object;
+    }
+
+    private void printData(Map source){
+        // prints source details.
+        System.out.println("Printing Source File Details.");
+        System.out.println("sid - " + source.get("sid"));
+        System.out.println("source_url - " + source.get("source_url"));
+        System.out.println("driver - " + source.get("driver"));
+        System.out.println("schema - " + source.get("schema"));
+        System.out.println("type - " + source.get("type"));
+    }
+
+    @Override
+    public void redisServer() throws IOException {
+        String address = Config.getDirPath("redis_server_address");
+        Config.jedis = new Jedis(address);
     }
 }

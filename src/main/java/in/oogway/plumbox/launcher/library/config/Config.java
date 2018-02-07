@@ -1,17 +1,13 @@
-package in.oogway.library.config;
+package in.oogway.plumbox.launcher.library.config;
+
+import redis.clients.jedis.Jedis;
 
 public class Config {
 
-    static final String tempPath = "src/main/java/in/oogway/runner/tmp/";
+    // Creating Jedis connection here. Can be changed while integration of code.
+    public static Jedis jedis;
 
-    public Config()
-    {
-        System.setProperty("yamldirectory", tempPath);
-        System.setProperty("ext", ".yml");
-    }
-
-    public String getDirPath(String key)
-    {
+    public static String getDirPath(String key) {
         return System.getProperty(key);
     }
 }
