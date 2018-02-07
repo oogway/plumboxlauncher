@@ -1,0 +1,6 @@
+tid: t01
+stages:
+    - in.oogway.plumbox.launcher.runner.transformer.MyTransformerClass11
+    - in.oogway.plumbox.launcher.runner.transformer.MyTransformerClass11
+    - in.oogway.plumbox.launcher.runner.transformer.MyTransformerClass11
+type: transformation
