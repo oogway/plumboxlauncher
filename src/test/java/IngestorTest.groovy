@@ -4,7 +4,7 @@ import spock.lang.Specification
 import javax.ws.rs.core.Response
 
 class IngestorTest extends Specification{
-    def "filterData"() {
+    def "loadContent"() {
         given:
         String ingestorFileName = "i01";
         when:
