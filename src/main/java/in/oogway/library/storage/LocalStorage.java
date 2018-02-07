@@ -13,29 +13,19 @@ public interface LocalStorage extends StorageDriver {
     Config config = new Config();
     String dir = config.getDirPath("yamldirectory");
     String ext = config.getDirPath("ext");
+
     /**
      * @param path A file path
      * @return byte array
      * @throws IOException
      */
     @Override
-    public default byte[] read(String path) {
+    public default byte[] read(String path) throws IOException {
         File file = new File(dir + path + ext);
-        InputStream is = null;
-        byte[] bytes = new byte[0];
-        try {
-            is = new FileInputStream(file);
-            bytes = IOUtils.toByteArray(is);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (is != null) {
-                try {
-                    is.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+        InputStream is = new FileInputStream(file);
+        byte[] bytes = IOUtils.toByteArray(is);
+        if (is != null) {
+            is.close();
         }
         return bytes;
     }

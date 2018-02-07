@@ -2,10 +2,13 @@ package in.oogway.library.ingestor;
 
 import com.esotericsoftware.yamlbeans.YamlException;
 import com.esotericsoftware.yamlbeans.YamlReader;
-import in.oogway.library.config.Config;
 import in.oogway.library.storage.LocalStorage;
 import in.oogway.runner.transformer.Transformer;
 import org.apache.commons.io.input.CharSequenceReader;
+import org.apache.log4j.Logger;
+
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -13,8 +16,10 @@ import java.util.Map;
 
 public class Ingestor implements LocalStorage {
 
-    public String[] loadContent(String path)
-            throws IllegalAccessException, InstantiationException, ClassNotFoundException {
+    public static final org.apache.log4j.Logger LOGGER = org.apache.log4j.Logger.getLogger(Logger.class);
+
+    public Response loadContent(String path)
+            throws IllegalAccessException, InstantiationException, ClassNotFoundException, IOException {
         byte[] bytes = read(path);
         Reader fileReader = getFileReader(bytes);
         Map yamlMap = getYAMLMap(fileReader);
@@ -41,7 +46,7 @@ public class Ingestor implements LocalStorage {
                 System.out.println("type - " + yamlMap.get("type"));
                 break;
         }
-        return null;
+        return Response.status(Status.CREATED).entity("Contents loaded successfully").build();
     }
 
     public Transformer getTransformer(String transClassPath)
@@ -50,24 +55,17 @@ public class Ingestor implements LocalStorage {
         return (Transformer) act.newInstance();
     }
 
-    private Reader getFileReader(byte[] initialArray){
+    private Reader getFileReader(byte[] initialArray) throws IOException {
         Reader targetReader = new CharSequenceReader(new String(initialArray));
-        try {
-            targetReader.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        targetReader.close();
+
         return targetReader;
     }
 
-    private Map getYAMLMap(Reader fileReader){
+    private Map getYAMLMap(Reader fileReader) throws YamlException {
         YamlReader reader = new YamlReader(fileReader);
         Object object = null;
-        try {
-            object = reader.read();
-        } catch (YamlException e) {
-            e.printStackTrace();
-        }
+        object = reader.read();
         return (Map)object;
     }
 }

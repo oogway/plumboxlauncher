@@ -1,15 +1,13 @@
 package in.oogway.runner;
 
-import com.esotericsoftware.yamlbeans.YamlException;
-import in.oogway.library.config.Config;
 import in.oogway.library.ingestor.Ingestor;
 
-import java.io.FileNotFoundException;
+import java.io.IOException;
 
 public class Main {
 
-    public static void main(String[] args) throws ClassNotFoundException, FileNotFoundException,
-            YamlException, InstantiationException, IllegalAccessException {
+    public static void main(String[] args) throws ClassNotFoundException, IOException,
+            InstantiationException, IllegalAccessException {
         String ingestorFileName = "i01";
 
         Ingestor ingestorObj = new Ingestor();
