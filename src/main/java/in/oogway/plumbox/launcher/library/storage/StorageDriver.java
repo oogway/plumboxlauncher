@@ -4,6 +4,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public interface StorageDriver {
-    byte[] read(String path) throws IOException;
-    void write(String path, byte[] byteArray) throws IOException;
+    byte[] read(String path);
+    void write(String path, byte[] byteArray);
 }

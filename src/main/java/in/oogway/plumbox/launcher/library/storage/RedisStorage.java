@@ -10,16 +10,14 @@ import java.util.List;
 
 public interface RedisStorage  extends StorageDriver {
 
-    void redisServer() throws IOException;
+    void redisServer();
 
     /**
      * @param key A key whose value is to be read. Eg: source_id: <source yaml file as value>
      * @return byte array of the yaml file contents.
-     * @throws IOException
      */
     @Override
-    default byte[] read(String key) throws IOException {
-        Config.jedis.ping();
+    default byte[] read(String key)  {
         String contents = Config.jedis.get(key);
         return contents.getBytes(Charset.forName("UTF-8"));
     }
@@ -30,7 +28,7 @@ public interface RedisStorage  extends StorageDriver {
      * @throws IOException
      */
     @Override
-    default  void write(String key, byte[] byteArray) throws IOException {
+    default  void write(String key, byte[] byteArray) {
         // write to redis.
         Config.jedis.set(key, new String(byteArray));
     }

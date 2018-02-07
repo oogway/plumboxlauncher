@@ -17,9 +17,16 @@ public class Ingestor implements RedisStorage {
 
     private String ingestorID;
 
-    public Ingestor(String id) throws IOException {
+    public Ingestor(String id) {
         this.ingestorID = id;
+        // connect to Redis server
         redisServer();
+    }
+
+    @Override
+    public void redisServer() {
+        String address = Config.getDirPath("redis_server_address");
+        Config.jedis = new Jedis(address);
     }
 
     public void execute()
@@ -85,11 +92,5 @@ public class Ingestor implements RedisStorage {
         System.out.println("driver - " + source.get("driver"));
         System.out.println("schema - " + source.get("schema"));
         System.out.println("type - " + source.get("type"));
-    }
-
-    @Override
-    public void redisServer() throws IOException {
-        String address = Config.getDirPath("redis_server_address");
-        Config.jedis = new Jedis(address);
     }
 }

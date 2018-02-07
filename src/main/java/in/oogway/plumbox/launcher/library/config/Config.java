@@ -4,7 +4,7 @@ import redis.clients.jedis.Jedis;
 
 public class Config {
 
-    // Creating Jedis connection here. Can be changed while integration of code.
+    // Declaring Jedis Object here. Can be changed while integration of code.
     public static Jedis jedis;
 
     public static String getDirPath(String key) {
