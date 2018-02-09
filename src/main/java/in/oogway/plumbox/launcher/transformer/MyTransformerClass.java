@@ -1,4 +1,4 @@
-package in.oogway.plumbox.launcher.runner.transformer;
+package in.oogway.plumbox.launcher.transformer;
 
 public class MyTransformerClass implements Transformer {
     @Override

@@ -1,6 +1,7 @@
-package in.oogway.plumbox.launcher.library.storage;
+package in.oogway.plumbox.launcher.storage;
 
-import in.oogway.plumbox.launcher.library.config.Config;
+import in.oogway.plumbox.launcher.Config;
+import redis.clients.jedis.Jedis;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -9,9 +10,6 @@ import java.nio.charset.Charset;
 *   @author talina06 on 2/7/18
 */
 public interface RedisStorage  extends StorageDriver {
-
-    void redisServer();
-
     /**
      * @param key A key whose value is to be read. Eg: source_id: <source yaml file as value>
      * @return byte array of the yaml file contents.
@@ -32,4 +30,10 @@ public interface RedisStorage  extends StorageDriver {
         // write to redis.
         Config.jedis.set(key, new String(byteArray));
     }
+
+    default void redisServer() {
+        String address = Config.getDirPath("redis_server_address");
+        Config.jedis = new Jedis(address);
+    }
+
 }

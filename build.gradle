@@ -14,10 +14,11 @@ repositories {
 }
 
 dependencies {
-    compile group: 'com.esotericsoftware.yamlbeans', name: 'yamlbeans', version: '1.08'
     compile group: 'commons-io', name: 'commons-io', version: '2.4'
     compile group: 'log4j', name: 'log4j', version: '1.2.17'
     compile group: 'redis.clients', name: 'jedis', version: '2.4.2'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.9.4'
+
 
     // JUnit Jupiter API and TestEngine implementation
     testCompile("org.junit.jupiter:junit-jupiter-api:${junitJupiterVersion}")

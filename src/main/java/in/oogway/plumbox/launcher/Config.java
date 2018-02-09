@@ -1,4 +1,4 @@
-package in.oogway.plumbox.launcher.library.config;
+package in.oogway.plumbox.launcher;
 
 import redis.clients.jedis.Jedis;
 

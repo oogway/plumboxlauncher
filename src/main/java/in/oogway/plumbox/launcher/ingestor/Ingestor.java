@@ -1,16 +1,15 @@
-package in.oogway.plumbox.launcher.library.ingestor;
+package in.oogway.plumbox.launcher.ingestor;
 
-import com.esotericsoftware.yamlbeans.YamlException;
-import com.esotericsoftware.yamlbeans.YamlReader;
-import in.oogway.plumbox.launcher.library.config.Config;
-import in.oogway.plumbox.launcher.library.storage.RedisStorage;
-import in.oogway.plumbox.launcher.runner.transformer.Transformer;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import in.oogway.plumbox.launcher.storage.RedisStorage;
+import in.oogway.plumbox.launcher.transformer.Transformer;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.CharSequenceReader;
-import redis.clients.jedis.Jedis;
 
-import java.io.IOException;
-import java.io.Reader;
+import java.io.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 /*
@@ -23,14 +22,7 @@ public class Ingestor implements RedisStorage {
 
     public Ingestor(String id) {
         this.ingestorID = id;
-        // connect to Redis server
         redisServer();
-    }
-
-    @Override
-    public void redisServer() {
-        String address = Config.getDirPath("redis_server_address");
-        Config.jedis = new Jedis(address);
     }
 
     public void execute()
@@ -56,19 +48,18 @@ public class Ingestor implements RedisStorage {
         //todo Write to a sink object.
     }
 
-
     private Map loadContent(String id)
             throws IllegalAccessException, InstantiationException, ClassNotFoundException, IOException {
         byte[] bytes = read(id);
         Reader fileReader = getFileReader(bytes);
-        return getYAMLMap(fileReader);
+        return getJSONMap(fileReader);
     }
 
     private ArrayList<Transformer> inflateTransformers(ArrayList<String> transformers)
             throws ClassNotFoundException, IllegalAccessException, InstantiationException {
         ArrayList<Transformer> transformerObjs = new ArrayList<>();
         for (String className:
-             transformers) {
+                transformers) {
             Class act = Class.forName(className);
             transformerObjs.add((Transformer) act.newInstance());
         }
@@ -82,11 +73,13 @@ public class Ingestor implements RedisStorage {
         return targetReader;
     }
 
-    private Map getYAMLMap(Reader fileReader) throws YamlException {
-        YamlReader reader = new YamlReader(fileReader);
-        Object object = reader.read();
-        return (Map)object;
+    private Map getJSONMap(Reader fileReader) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        TypeReference<HashMap<String, Object>> typeRef
+                = new TypeReference<HashMap<String, Object>>() {};
+        return mapper.readValue(fileReader, typeRef);
     }
+
 
     private void printData(Map source){
         // prints source details.

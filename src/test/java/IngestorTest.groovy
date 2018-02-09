@@ -1,4 +1,4 @@
-import in.oogway.plumbox.launcher.library.ingestor.Ingestor
+import in.oogway.plumbox.launcher.ingestor.Ingestor
 import spock.lang.Specification
 
 class IngestorTest extends Specification{

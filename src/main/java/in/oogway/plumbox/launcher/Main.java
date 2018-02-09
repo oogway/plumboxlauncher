@@ -1,13 +1,13 @@
-package in.oogway.plumbox.launcher.runner;
+package in.oogway.plumbox.launcher;
 
+/*
+*   @author talina06 on 2/8/18
+*/
 
-import in.oogway.plumbox.launcher.library.ingestor.Ingestor;
+import in.oogway.plumbox.launcher.ingestor.Ingestor;
 
 import java.io.IOException;
 
-/*
-*   @author talina06 on 2/7/18
-*/
 public class Main {
 
     public static void main(String[] args) throws ClassNotFoundException, IOException,
@@ -17,6 +17,7 @@ public class Main {
          * If not to be done, uncomment below line.
          */
         // System.setProperty("redis_server_address", "localhost");
+
         Ingestor ingestorObj = new Ingestor(ingestorFileName);
         ingestorObj.execute();
     }
