@@ -1,0 +1,7 @@
+{
+  "id": "i01",
+  "type": "ingestor",
+  "transformation": "t01",
+  "source": "s1234",
+  "sink": "mysinkname"
+}
