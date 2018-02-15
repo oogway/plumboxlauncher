@@ -19,7 +19,7 @@ public class Launcher {
      * @throws IllegalAccessException
      * @throws IOException
      */
-    // todo explain what is being done.
+
     public static void main(String[] args) throws ClassNotFoundException, InstantiationException,
             IllegalAccessException, IOException {
 
