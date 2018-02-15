@@ -10,10 +10,7 @@ import java.nio.charset.Charset;
 */
 public interface RedisStorage  extends StorageDriver {
 
-    default void redisServer() {
-        String address = Config.getDirPath("redis_server_address");
-        Config.jedis = new Jedis(address);
-    }
+    Jedis jedis = new Jedis(Config.getDirPath("redis_server_address"));
 
     /**
      * @param key A key whose value is to be read. Eg: source_id: <source yaml file as value>
@@ -21,7 +18,7 @@ public interface RedisStorage  extends StorageDriver {
      */
     @Override
     default byte[] read(String key)  {
-        String contents = Config.jedis.get(key);
+        String contents = jedis.get(key);
         return contents.getBytes(Charset.forName("UTF-8"));
     }
 }

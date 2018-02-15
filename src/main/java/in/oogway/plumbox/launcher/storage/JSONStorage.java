@@ -13,7 +13,7 @@ import java.util.Map;
 *   @author talina06 on 2/15/18
 */
 
-public interface JSONParser extends RedisStorage{
+public interface JSONStorage extends RedisStorage{
 
     default Map loadContent(String id)
             throws IllegalAccessException, InstantiationException, ClassNotFoundException, IOException {

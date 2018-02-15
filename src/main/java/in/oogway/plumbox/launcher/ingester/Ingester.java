@@ -1,10 +1,10 @@
-package in.oogway.plumbox.launcher.ingestor;
+package in.oogway.plumbox.launcher.ingester;
 
 import in.oogway.plumbox.launcher.config.Config;
 import in.oogway.plumbox.launcher.config.SparkConfig;
 import in.oogway.plumbox.launcher.sink.Sink;
 import in.oogway.plumbox.launcher.source.Source;
-import in.oogway.plumbox.launcher.storage.JSONParser;
+import in.oogway.plumbox.launcher.storage.JSONStorage;
 import in.oogway.plumbox.launcher.storage.RedisStorage;
 import in.oogway.plumbox.launcher.transformer.Transformer;
 import org.apache.spark.sql.Dataset;
@@ -18,13 +18,12 @@ import java.util.Map;
 *   @author talina06 on 2/6/18
 */
 
-public class Ingestor implements RedisStorage, JSONParser {
+public class Ingester implements RedisStorage, JSONStorage {
 
     private String ingestorID;
 
-    public Ingestor(String id) {
+    public Ingester(String id) {
         this.ingestorID = id;
-        redisServer();
         Config.sparkSession = new SparkConfig(ingestorID);
     }
 

@@ -5,7 +5,7 @@ package in.oogway.plumbox.launcher.source;
 */
 
 import in.oogway.plumbox.launcher.config.Config;
-import in.oogway.plumbox.launcher.storage.JSONParser;
+import in.oogway.plumbox.launcher.storage.JSONStorage;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.Map;
 
-public class Source implements JSONParser{
+public class Source implements JSONStorage {
 
     private String sourceID;
 

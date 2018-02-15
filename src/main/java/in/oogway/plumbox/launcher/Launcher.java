@@ -4,7 +4,7 @@ package in.oogway.plumbox.launcher;
 *   @author talina06 on 2/8/18
 */
 
-import in.oogway.plumbox.launcher.ingestor.Ingestor;
+import in.oogway.plumbox.launcher.ingester.Ingester;
 
 import java.io.IOException;
 
@@ -23,7 +23,7 @@ public class Launcher {
     public static void main(String[] args) throws ClassNotFoundException, InstantiationException,
             IllegalAccessException, IOException {
 
-        Ingestor ingestorObj = new Ingestor(args[0]);
+        Ingester ingestorObj = new Ingester(args[0]);
         ingestorObj.execute();
     }
 }
