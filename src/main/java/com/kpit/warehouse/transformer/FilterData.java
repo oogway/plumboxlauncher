@@ -6,37 +6,45 @@ package com.kpit.warehouse.transformer;
 
 import com.kpit.warehouse.model.Geofence;
 import in.oogway.plumbox.launcher.config.Config;
-import org.apache.spark.sql.*;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
+import org.apache.spark.sql.SQLContext;
+import org.apache.spark.sql.api.java.UDF2;
+import org.apache.spark.sql.functions;
+import org.apache.spark.sql.types.DataTypes;
+import scala.Serializable;
 
-public class FilterData implements Transformer {
+public class FilterData implements Transformer, Serializable {
 
     private Geofence geofence;
-
-    @Override
-    public Dataset<Row> run(Dataset<Row> allEvents) {
-        geofence = new Geofence(18.5318058,73.85004320000007,(double)500);
-        return filterData(geofence, allEvents);
-    }
+    SQLContext sqlc = new SQLContext(Config.sparkSession.getSession());
 
     /**
-     * @param geofence
      * @param allEvents
      * @return Filtered Dataset with isWithinGeofence set as true or false.
      */
     // Filter the Event based on Geo fence parameters.
     /* geo fence lat, lon, radius, arraylist of all events.
     ** for a bus entity.*/
-    public static Dataset<Row> filterData(Geofence geofence, Dataset<Row> allEvents){
-        Dataset<Row> filteredSet = allEvents.withColumn( "isWithinGeofence", functions.lit(false));
+    @Override
+    public Dataset<Row> run(Dataset<Row> allEvents) {
+        geofence = new Geofence(18.5318058,73.85004320000007,(double)500);
 
-        SQLContext sqlc = new SQLContext(Config.sparkSession.getSession());
 
-        final Dataset<Row> finalSet = sqlc.createDataFrame(filteredSet.javaRDD().map(row -> {
-            return RowFactory.create(row.get(0), row.get(1), row.get(2), row.get(3), row.get(4), checkInside(geofence.getLatitude(),
-                    geofence.getLongitude(), geofence.getRadius(), row.getDouble(2), row.getDouble(3)));
-        }), filteredSet.schema());
+        UDF2 filter = new UDF2<Double, Double, Boolean>() {
+            public Boolean call(Double latitude, Double longitude) throws Exception {
+                return checkInside(geofence.getLatitude(), geofence.getLongitude(), geofence.getRadius(), latitude, longitude);
+            }
+        };
 
-        return finalSet;
+        sqlc.udf().register("filter_data", filter, DataTypes.BooleanType);
+
+        Dataset<Row> transformedRawDS = allEvents.withColumn("is_within_geofence",
+                functions.callUDF("filter_data",
+                        functions.col("latitude"), functions.col("longitude")));
+
+        transformedRawDS.show();
+        return transformedRawDS;
     }
 
     /** HAVERSINE FORMULA
