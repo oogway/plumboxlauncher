@@ -5,5 +5,4 @@ package in.oogway.plumbox.launcher.storage;
 */
 public interface StorageDriver {
     byte[] read(String path);
-    void write(String path, byte[] byteArray);
 }

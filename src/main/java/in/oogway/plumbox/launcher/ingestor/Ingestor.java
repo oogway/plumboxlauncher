@@ -1,15 +1,16 @@
 package in.oogway.plumbox.launcher.ingestor;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import in.oogway.plumbox.launcher.config.Config;
+import in.oogway.plumbox.launcher.config.SparkConfig;
+import in.oogway.plumbox.launcher.sink.Sink;
+import in.oogway.plumbox.launcher.source.Source;
 import in.oogway.plumbox.launcher.storage.RedisStorage;
 import in.oogway.plumbox.launcher.transformer.Transformer;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.input.CharSequenceReader;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
 
-import java.io.*;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 
 /*
@@ -23,38 +24,51 @@ public class Ingestor implements RedisStorage {
     public Ingestor(String id) {
         this.ingestorID = id;
         redisServer();
+        Config.sparkSession = new SparkConfig(ingestorID);
     }
 
+    /**
+     * Reads ingestor yaml, data from source, executes all transformations of dataframe, writes filtered dataset to sink.
+     * @throws ClassNotFoundException
+     * @throws IOException
+     * @throws InstantiationException
+     * @throws IllegalAccessException
+     */
     public void execute()
             throws ClassNotFoundException, IOException, InstantiationException, IllegalAccessException {
 
+        // Read ingestor yaml from Redis.
         Map ingestor = loadContent(ingestorID);
-        String sourceId = ingestor.get("source").toString();
-        Map source = loadContent(sourceId);
 
-        // todo Printing source as of now. Stubs to be added later.
-        printData(source);
+        // Create a source Object and load source data in a Dataset.
+        Source source = new Source(ingestor.get("source").toString());
+        Dataset<Row> sourceData = source.load();
 
+        // Get instances of all transformations.
         String transformationId = ingestor.get("transformation").toString();
         Map tf = loadContent(transformationId);
-        ArrayList<Transformer> transformers = inflateTransformers((ArrayList) tf.get("stages"));
+        ArrayList<Transformer> transformers = inflateTransformers((ArrayList) tf.get("classes"));
 
-        // todo Create a source object.
+        // Run all transformations.
         for (Transformer t:
              transformers) {
-            t.run(); // todo input: Dataframe, output: Dataframe.
+            System.out.println(t);
+            sourceData = t.run(sourceData);
         }
 
-        //todo Write to a sink object.
+        // Write to sink.
+        Sink sink = new Sink();
+        sink.write(sourceData, (String)ingestor.get("sink"));
+
     }
 
-    private Map loadContent(String id)
-            throws IllegalAccessException, InstantiationException, ClassNotFoundException, IOException {
-        byte[] bytes = read(id);
-        Reader fileReader = getFileReader(bytes);
-        return getJSONMap(fileReader);
-    }
-
+    /**
+     * @param transformers
+     * @return An arraylist of instances of Transformation classes.
+     * @throws ClassNotFoundException
+     * @throws IllegalAccessException
+     * @throws InstantiationException
+     */
     private ArrayList<Transformer> inflateTransformers(ArrayList<String> transformers)
             throws ClassNotFoundException, IllegalAccessException, InstantiationException {
         ArrayList<Transformer> transformerObjs = new ArrayList<>();
@@ -66,28 +80,4 @@ public class Ingestor implements RedisStorage {
         return transformerObjs;
     }
 
-    private Reader getFileReader(byte[] initialArray) throws IOException {
-        Reader targetReader = new CharSequenceReader(new String(initialArray));
-        targetReader.close();
-
-        return targetReader;
-    }
-
-    private Map getJSONMap(Reader fileReader) throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
-        TypeReference<HashMap<String, Object>> typeRef
-                = new TypeReference<HashMap<String, Object>>() {};
-        return mapper.readValue(fileReader, typeRef);
-    }
-
-
-    private void printData(Map source){
-        // prints source details.
-        System.out.println("Printing Source File Details.");
-        System.out.println("sid - " + source.get("sid"));
-        System.out.println("source_url - " + source.get("source_url"));
-        System.out.println("driver - " + source.get("driver"));
-        System.out.println("schema - " + source.get("schema"));
-        System.out.println("type - " + source.get("type"));
-    }
 }
