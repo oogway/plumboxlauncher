@@ -4,14 +4,10 @@ import net.sourceforge.argparse4j.inf.ArgumentParserException;
 
 public class Main {
 
-    public static void main (String args[]) {
+    public static void main (String args[]) throws ArgumentParserException, IllegalAccessException, ClassNotFoundException, InstantiationException {
 
-        try {
-            CommandExecutor executor = new CommandExecutor();
-            executor.execute(args);
+        Cli executor = new Cli();
+        executor.execute(args);
 
-        } catch (ArgumentParserException e) {
-            e.printStackTrace();
-        }
     }
 }
