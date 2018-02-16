@@ -3,14 +3,15 @@ package in.oogway.plumbox.cli;
 import in.oogway.plumbox.launcher.Ingester;
 import in.oogway.plumbox.launcher.Sink;
 import in.oogway.plumbox.launcher.Source;
-import in.oogway.plumbox.launcher.Transformation;
+import in.oogway.plumbox.launcher.Pipeline;
 import org.junit.jupiter.api.Test;
 
 class PlumboxTest extends LocalTester {
     private String[] transformations() {
         return new String[]{
                 "in.oogway.plumbox.SampleTransformation",
-                "in.oogway.plumbox.ShowDf"};
+                "in.oogway.plumbox.ShowDf"
+        };
     }
 
     @Test
@@ -23,7 +24,7 @@ class PlumboxTest extends LocalTester {
         Sink sk = new Sink("json", "output", "");
         String sinkId = pb.declare(sk);
 
-        Transformation t = new Transformation("".join(",", transformations()));
+        Pipeline t = new Pipeline("".join(",", transformations()));
         String tId = pb.declare(t);
 
         Ingester ig = new Ingester(sourceId, sinkId, tId);

@@ -24,7 +24,7 @@ public class Cli {
             i.execute(pb.getDriver(), sc.getSession());
         });
 
-        handlers.put("declare-uri", (Plumbox pb, Namespace ns) -> {
+        handlers.put("declare-source", (Plumbox pb, Namespace ns) -> {
             pb.declare(new Source(
                     ns.get("path"),
                     ns.get("driver"),
@@ -40,7 +40,7 @@ public class Cli {
             }
 
             String transformation = ns.get("transformation");
-            Transformation t = (Transformation) pb.get(transformation, Transformation.class);
+            Pipeline t = (Pipeline) pb.get(transformation, Pipeline.class);
             if (t == null) {
                 throw new RuntimeException(String.format("%s not found", transformation));
             }
@@ -52,13 +52,13 @@ public class Cli {
         });
 
         handlers.put("declare-transformation", (Plumbox pb, Namespace ns) -> {
-            pb.declare(new Transformation(
+            pb.declare(new Pipeline(
                     ns.get("stages")));
         });
 
         ArrayList<Class> getters = new ArrayList<Class>();
         getters.add(Source.class);
-        getters.add(Transformation.class);
+        getters.add(Pipeline.class);
         getters.add(Ingester.class);
         getters.add(View.class);
 

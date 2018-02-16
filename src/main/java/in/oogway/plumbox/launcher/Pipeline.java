@@ -3,11 +3,11 @@ package in.oogway.plumbox.launcher;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class Transformation {
+public class Pipeline {
     public String stages;
     private String[] _stages;
 
-    public Transformation(String stages) {
+    public Pipeline(String stages) {
         this.stages = stages;
         _stages = stages.split(",");
     }
@@ -18,7 +18,7 @@ public class Transformation {
 
     @Override
     public String toString() {
-        return "Transformation{" +
+        return "Pipeline{" +
                 "stages='" + stages + '\'' +
                 ", _stages=" + Arrays.toString(_stages) +
                 '}';

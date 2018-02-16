@@ -44,4 +44,13 @@ public class Source {
 
         return df;
     }
+
+    @Override
+    public String toString() {
+        return "Source{" +
+                "path='" + path + '\'' +
+                ", driver='" + driver + '\'' +
+                ", uri='" + uri + '\'' +
+                '}';
+    }
 }
