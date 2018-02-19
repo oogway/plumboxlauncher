@@ -1,9 +1,9 @@
 package in.oogway.plumbox.cli;
 
 import in.oogway.plumbox.launcher.Ingester;
+import in.oogway.plumbox.launcher.Pipeline;
 import in.oogway.plumbox.launcher.Sink;
 import in.oogway.plumbox.launcher.Source;
-import in.oogway.plumbox.launcher.Pipeline;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;

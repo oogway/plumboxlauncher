@@ -15,7 +15,7 @@ repositories {
     mavenCentral()
     jcenter()
 }
-
+/*
 allprojects {
     repositories {
         mavenCentral()
@@ -29,7 +29,7 @@ allprojects {
             }
         }
     }
-}
+}*/
 
 task wrapper(type: Wrapper) {
     gradleVersion = '4.5'
