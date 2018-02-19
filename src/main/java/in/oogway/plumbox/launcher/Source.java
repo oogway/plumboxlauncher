@@ -1,6 +1,5 @@
 package in.oogway.plumbox.launcher;
 
-import in.oogway.plumbox.config.SparkConfig;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
