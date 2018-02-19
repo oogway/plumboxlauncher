@@ -39,7 +39,7 @@ public class Cli {
                 throw new RuntimeException(String.format("%s not found", source));
             }
 
-            String transformation = ns.get("transformation");
+            String transformation = ns.get("pipeline");
             Pipeline t = (Pipeline) pb.get(transformation, Pipeline.class);
             if (t == null) {
                 throw new RuntimeException(String.format("%s not found", transformation));
@@ -48,10 +48,10 @@ public class Cli {
             pb.declare(new Ingester(
                     ns.get("uri"),
                     ns.get("sink"),
-                    ns.get("transformation")));
+                    ns.get("pipeline")));
         });
 
-        handlers.put("declare-transformation", (Plumbox pb, Namespace ns) -> {
+        handlers.put("declare-pipeline", (Plumbox pb, Namespace ns) -> {
             pb.declare(new Pipeline(
                     ns.get("stages")));
         });
