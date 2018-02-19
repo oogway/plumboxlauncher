@@ -6,6 +6,8 @@ import in.oogway.plumbox.launcher.Source;
 import in.oogway.plumbox.launcher.Pipeline;
 import org.junit.jupiter.api.Test;
 
+import java.util.HashMap;
+
 class PlumboxTest extends LocalTester {
     private String[] transformations() {
         return new String[]{
@@ -18,7 +20,15 @@ class PlumboxTest extends LocalTester {
     void testIngester() {
         Plumbox pb = new Plumbox(new MemoryStorage());
 
-        Source s = new Source("src/test/resources/input_source_file.json", "json", "local");
+        Source s = new Source(new HashMap<String, String>(){{
+//            put("path", "src/test/resources/input_source_file.json");
+//            put("format", "json");
+            put("format", "jdbc");
+            put("driver", "com.mysql.jdbc.Driver");
+            put("url", "jdbc:mysql://127.0.0.1:3306/test?user=reader&password=10.0.0.1");
+            put("dbtable", "(SELECT * FROM users WHERE phone=1) AS x");
+        }});
+
         String sourceId = pb.declare(s);
 
         Sink sk = new Sink("json", "output", "");

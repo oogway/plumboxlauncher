@@ -1,7 +1,7 @@
 package in.oogway.plumbox.cli;
 
-import net.sourceforge.argparse4j.inf.Namespace;
+import java.util.HashMap;
 
 public interface CliHandler {
-    void run(Plumbox pb, Namespace ns) throws IllegalAccessException, ClassNotFoundException, InstantiationException;
+    void run(Plumbox pb, HashMap<String, String> ns) throws IllegalAccessException, ClassNotFoundException, InstantiationException;
 }

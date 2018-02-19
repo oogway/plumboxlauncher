@@ -1,37 +1,41 @@
 package in.oogway.plumbox.cli;
 
 import in.oogway.plumbox.config.SparkConfig;
-import in.oogway.plumbox.launcher.*;
-import net.sourceforge.argparse4j.ArgumentParsers;
-import net.sourceforge.argparse4j.inf.*;
+import in.oogway.plumbox.launcher.Ingester;
+import in.oogway.plumbox.launcher.Pipeline;
+import in.oogway.plumbox.launcher.Source;
+import in.oogway.plumbox.launcher.View;
+import org.apache.commons.cli.*;
 import org.apache.commons.lang3.StringUtils;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Properties;
 
 public class Cli {
-    private static ArgumentParser parser = ArgumentParsers.newFor("plumbox").build();
-    private static Subparsers subparsers = parser.addSubparsers().dest("cmd");
     private static HashMap<String, CliHandler> handlers = new HashMap<>();
+    private static Option property = null;
+    private static Options options = new Options();
+    private static CommandLineParser bparser = new DefaultParser();
 
     static {
-        Subparser get = subparsers.addParser("sync");
-        get.addArgument("--id").type(String.class).required(true).dest("id");
-        handlers.put("sync", (Plumbox pb, Namespace ns) -> {
+        Option opt = Option.builder("P").hasArgs()
+                .valueSeparator('=')
+                .build();
+        options.addOption(opt);
+
+        handlers.put("sync", (Plumbox pb, HashMap<String, String> ns) -> {
             Ingester i = (Ingester) pb.get(ns.get("id"), Ingester.class);
             SparkConfig sc = new SparkConfig("Plumbox Launcher");
             i.execute(pb.getDriver(), sc.getSession());
         });
 
-        handlers.put("declare-source", (Plumbox pb, Namespace ns) -> {
-            pb.declare(new Source(
-                    ns.get("path"),
-                    ns.get("driver"),
-                    ns.get("uri")));
+        handlers.put("declare-source", (Plumbox pb, HashMap<String, String> ns) -> {
+            pb.declare(new Source(ns));
         });
 
-        handlers.put("declare-ingester", (Plumbox pb, Namespace ns) -> {
+        handlers.put("declare-ingester", (Plumbox pb, HashMap<String, String> ns) -> {
             String source = ns.get("uri");
             Source f = (Source) pb.get(source, Source.class);
 
@@ -51,7 +55,7 @@ public class Cli {
                     ns.get("pipeline")));
         });
 
-        handlers.put("declare-pipeline", (Plumbox pb, Namespace ns) -> {
+        handlers.put("declare-pipeline", (Plumbox pb, HashMap<String, String> ns) -> {
             pb.declare(new Pipeline(
                     ns.get("stages")));
         });
@@ -63,46 +67,49 @@ public class Cli {
         getters.add(View.class);
 
         for (Class entity: getters) {
-            addDeclation(entity);
             addGetter(entity);
             addGetAll(entity);
         }
     }
 
-    private static <T> void addDeclation(Class<T> entity) {
-        String handlerDeclare = String.format("declare-%s", entity.getSimpleName().toLowerCase());
-        Subparser declaration = subparsers.addParser(handlerDeclare);
-        for (Field f : entity.getFields()) {
-            String field_name = f.getName().toLowerCase();
-            declaration.addArgument("--".concat(field_name))
-                    .type(f.getType())
-                    .required(true)
-                    .dest(field_name);
-        }
-    }
-
     private static <T> void addGetter(Class<T> entity) {
         String handlerOne = String.format("get-%s", entity.getSimpleName().toLowerCase());
-        Subparser get = subparsers.addParser(handlerOne);
-        get.addArgument("--id").type(String.class).required(true).dest("id");
-        handlers.put(handlerOne, (Plumbox pb, Namespace ns) -> {
+        handlers.put(handlerOne, (Plumbox pb, HashMap<String, String> ns) -> {
             System.out.println(pb.get(ns.get("id"), entity));
         });
     }
 
     private static <T> void addGetAll(Class<T> entity) {
         String handlerAll = String.format("get-%ss", entity.getSimpleName().toLowerCase());
-        subparsers.addParser(handlerAll);
-        handlers.put(handlerAll, (Plumbox pb, Namespace ns) -> {
+        handlers.put(handlerAll, (Plumbox pb, HashMap<String, String> ns) -> {
             pb.getAll(entity.getSimpleName().toLowerCase(), entity)
                     .forEach((k, n) ->
                             System.out.println(String.format("%s -> %s", k, n)));
         });
     }
 
-    public static void execute(String[] args) throws ArgumentParserException, IllegalAccessException, InstantiationException, ClassNotFoundException {
-        Namespace ns = parser.parseArgs(args);
-        String cmd = ns.get("cmd");
+    public static void execute(String[] args) throws IllegalAccessException, InstantiationException, ClassNotFoundException, ParseException {
+        if (args.length < 2) {
+            System.out.println(String.format("Must provide a subcommand"));
+            System.exit(127);
+        }
+
+        String cmd = args[0];
+        CliHandler handler = handlers.get(cmd);
+        if (handler == null) {
+            System.out.println(String.format("No matching handler for %s", cmd));
+            System.exit(127);
+        }
+
+        CommandLine line = bparser.parse(options, args);
+        HashMap<String, String> options = new HashMap<>();
+        Properties ns = line.getOptionProperties("P");
+        Enumeration<?> d = ns.propertyNames();
+
+        while (d.hasMoreElements()) {
+            Object val = d.nextElement();
+            options.put((String) val, (String) ns.get(val));
+        }
 
         String host = System.getProperty("REDIS_HOST");
         if (StringUtils.isEmpty(host)) {
@@ -110,7 +117,6 @@ public class Cli {
         }
 
         Plumbox pb = new Plumbox(new RedisStorage(host));
-
-        handlers.get(cmd).run(pb, ns);
+        handler.run(pb, options);
     }
 }
