@@ -1,0 +1,78 @@
+group 'in.oogway.plumbox'
+version '1.0'
+
+apply plugin: 'groovy'
+apply plugin: 'java'
+apply plugin: 'application'
+
+mainClassName = "in.oogway.plumbox.cli.Main"
+
+sourceCompatibility = 1.8
+
+ext.junitJupiterVersion  = '5.0.0'
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+allprojects {
+    repositories {
+        mavenCentral()
+        jcenter()
+
+        maven {
+            url "s3://plumbox-artifacts/releases"
+            credentials(AwsCredentials) {
+                accessKey AWS_ACCESS_KEY
+                secretKey AWS_SECRET_KEY
+            }
+        }
+    }
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.5'
+}
+dependencies {
+    compile "in.oogway.plumbox:plumbox:1.0.6"
+    compile group: 'commons-io', name: 'commons-io', version: '2.4'
+    compile group: 'log4j', name: 'log4j', version: '1.2.17'
+    compile group: 'redis.clients', name: 'jedis', version: '2.9.0'
+    compile group: 'joda-time', name: 'joda-time', version: '2.1'
+    compile group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
+    compile group: 'org.apache.spark', name: 'spark-sql_2.11', version: '2.1.1'
+    compile group: 'org.json', name: 'json', version: '20180130'
+    compile 'com.google.code.gson:gson:2.8.2'
+    compile group: 'commons-cli', name: 'commons-cli', version: '1.4'
+
+
+    // JUnit Jupiter API and TestEngine implementation
+    testCompile("org.junit.jupiter:junit-jupiter-api:${junitJupiterVersion}")
+    testRuntime("org.junit.jupiter:junit-jupiter-engine:${junitJupiterVersion}")
+    testCompile "org.spockframework:spock-core:1.1-groovy-2.4"
+}
+
+task createCLIJar (type: Jar) {
+    manifest {
+        attributes 'Implementation-Title': 'Gradle Jar for CLI',
+                'Implementation-Version': version,
+                'Main-Class': 'in.oogway.plumbox.cli.Main'
+    }
+    baseName = "plumbox-cli"
+    zip64 true
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+
+task createLauncherJar (type: Jar) {
+    manifest {
+        attributes 'Implementation-Title': 'Gradle Jar for Launcher Spark Jobs',
+                'Implementation-Version': version,
+                'Main-Class': 'in.oogway.plumbox.launcher.Launcher'
+    }
+    baseName = "plumbox-launcher"
+    zip64 true
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
