@@ -1,4 +1,4 @@
-package in.oogway.plumbox.launcher.config;
+package in.oogway.plumbox.cli;
 
 import org.apache.spark.sql.SparkSession;
 
@@ -19,4 +19,3 @@ public class SparkConfig {
         return this.spark;
     }
 }
-

@@ -1,17 +1,13 @@
 package in.oogway.plumbox.cli;
 
-import net.sourceforge.argparse4j.inf.ArgumentParserException;
+import org.apache.commons.cli.ParseException;
 
 public class Main {
 
-    public static void main (String args[]) {
+    public static void main (String args[]) throws IllegalAccessException, ClassNotFoundException, InstantiationException, ParseException {
 
-        try {
-            CommandExecutor executor = new CommandExecutor();
-            executor.execute(args);
+        Cli executor = new Cli();
+        executor.execute(args);
 
-        } catch (ArgumentParserException e) {
-            e.printStackTrace();
-        }
     }
 }

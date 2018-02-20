@@ -1,10 +1,8 @@
-package in.oogway.plumbox.launcher.config;
-
-import redis.clients.jedis.Jedis;
+package in.oogway.plumbox.cli;
 
 /*
-*   @author talina06 on 2/12/18
-*/public class Config {
+ *   @author talina06 on 2/12/18
+ */public class Config {
     public static String MASTER="local[*]";
     public static SparkConfig sparkSession;
 
