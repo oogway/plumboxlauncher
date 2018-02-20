@@ -18,3 +18,9 @@ public class SampleTransformation implements Transformer {
     }
 }
 
+public class ActionsTransformation implements Transformer {
+    @Override
+    public Dataset<Row> run(Dataset<Row> df) {
+        return df.withColumn("_id", col("_id.oid")).withColumn("team", col("team.oid")).withColumn("user_created", col("user_created.oid"));
+    }
+}
