@@ -1,9 +1,0 @@
-{
-  "tid": "t01",
-  "stages": [
-    "in.oogway.plumbox.launcher.transformer.MyTransformerClass",
-    "in.oogway.plumbox.launcher.transformer.MyTransformerClass",
-    "in.oogway.plumbox.launcher.transformer.MyTransformerClass"
-  ],
-  "type": "transformation"
-}
