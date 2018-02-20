@@ -16,13 +16,18 @@ class PlumboxTest extends LocalTester {
         };
     }
 
+    private String[] new_transformations() {
+        return new String[]{
+                "in.oogway.plumbox.ActionsTransformation",
+                "in.oogway.plumbox.ShowDf"
+        };
+    }
+
     @Test
     void testIngester() {
         Plumbox pb = new Plumbox(new MemoryStorage());
 
         Source s = new Source(new HashMap<String, String>(){{
-//            put("path", "src/test/resources/input_source_file.json");
-//            put("format", "json");
             put("format", "jdbc");
             put("driver", "com.mysql.jdbc.Driver");
             put("url", "jdbc:mysql://127.0.0.1:3306/test_db?user=root&password=password");
@@ -50,5 +55,6 @@ class PlumboxTest extends LocalTester {
             e.printStackTrace();
         }
     }
+
 }
 

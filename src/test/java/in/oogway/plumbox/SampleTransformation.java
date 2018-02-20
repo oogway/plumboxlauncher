@@ -17,4 +17,3 @@ public class SampleTransformation implements Transformer {
         return df.withColumn("processed_on", getCurrentTS());
     }
 }
-
