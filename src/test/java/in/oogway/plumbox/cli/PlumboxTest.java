@@ -25,8 +25,8 @@ class PlumboxTest extends LocalTester {
 //            put("format", "json");
             put("format", "jdbc");
             put("driver", "com.mysql.jdbc.Driver");
-            put("url", "jdbc:mysql://127.0.0.1:3306/test?user=reader&password=10.0.0.1");
-            put("dbtable", "(SELECT * FROM users WHERE phone=1) AS x");
+            put("url", "jdbc:mysql://127.0.0.1:3306/test_db?user=root&password=password");
+            put("dbtable", "student");
         }});
 
         String sourceId = pb.declare(s);
