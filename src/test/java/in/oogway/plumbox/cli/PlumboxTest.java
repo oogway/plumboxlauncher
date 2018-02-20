@@ -16,6 +16,7 @@ class PlumboxTest extends LocalTester {
         };
     }
 
+<<<<<<< HEAD
     private String[] new_transformations() {
         return new String[]{
                 "in.oogway.plumbox.ActionsTransformation",
@@ -23,13 +24,20 @@ class PlumboxTest extends LocalTester {
         };
     }
 
+=======
+>>>>>>> 97bb46525d9bcf1d00d4279245b3ba6b15f1ca35
     @Test
     void testIngester() {
         Plumbox pb = new Plumbox(new MemoryStorage());
 
         Source s = new Source(new HashMap<String, String>(){{
+<<<<<<< HEAD
 //          put("path", "src/test/resources/input_source_file.json");
 //          put("format", "json");
+=======
+//            put("path", "src/test/resources/input_source_file.json");
+//            put("format", "json");
+>>>>>>> 97bb46525d9bcf1d00d4279245b3ba6b15f1ca35
             put("format", "jdbc");
             put("driver", "com.mysql.jdbc.Driver");
             put("url", "jdbc:mysql://127.0.0.1:3306/test?user=reader&password=10.0.0.1");
@@ -57,6 +65,7 @@ class PlumboxTest extends LocalTester {
             e.printStackTrace();
         }
     }
+<<<<<<< HEAD
 
     @Test
     void testMongoIngester() {
@@ -91,5 +100,7 @@ class PlumboxTest extends LocalTester {
             e.printStackTrace();
         }
     }
+=======
+>>>>>>> 97bb46525d9bcf1d00d4279245b3ba6b15f1ca35
 }
 

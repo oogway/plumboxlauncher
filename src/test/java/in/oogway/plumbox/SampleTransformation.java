@@ -17,3 +17,7 @@ public class SampleTransformation implements Transformer {
         return df.withColumn("processed_on", getCurrentTS());
     }
 }
+<<<<<<< HEAD
+=======
+
+>>>>>>> 97bb46525d9bcf1d00d4279245b3ba6b15f1ca35
