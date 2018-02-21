@@ -23,7 +23,7 @@ class PlumboxTest extends LocalTester {
         };
     }
 
-    /*
+
     @Test
     void testIngester() {
         Plumbox pb = new Plumbox(new MemoryStorage());
@@ -57,14 +57,13 @@ class PlumboxTest extends LocalTester {
             e.printStackTrace();
         }
     }
-    */
+
 
     @Test
     void testMongoIngester() {
         Plumbox pb = new Plumbox(new MemoryStorage());
-
-        String input_uri = "mongodb://oogway:10.0.0.1@changerdemo-shard-00-00-vi20w.mongodb.net:27017,changerdemo-shard-00-01-vi20w.mongodb.net:27017,changerdemo-shard-00-02-vi20w.mongodb.net:27017/test.actionapp.actions?ssl=true&replicaSet=changerdemo-shard-0&authSource=admin";
-
+        String input_uri = System.getenv("INPUT_URI");
+        
         Source s = new Source(new HashMap<String, String>(){{
             //put("format", "jdbc");
             //put("driver", "com.mysql.jdbc.Driver");
