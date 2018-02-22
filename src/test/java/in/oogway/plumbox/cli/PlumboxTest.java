@@ -21,7 +21,7 @@ class PlumboxTest extends LocalTester {
     private String[] new_transformations() {
         return new String[]{
                 "in.oogway.plumbox.ActionsTransformation",
-                "in.oogway.plumbox.ShowDf"
+                "in.oogway.plumbox.cli.testing.transformation.ShowDF"
         };
     }
 
