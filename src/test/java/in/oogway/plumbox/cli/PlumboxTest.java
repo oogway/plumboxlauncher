@@ -1,5 +1,7 @@
 package in.oogway.plumbox.cli;
 
+import in.oogway.plumbox.cli.testing.LocalTester;
+import in.oogway.plumbox.cli.testing.MemoryStorage;
 import in.oogway.plumbox.launcher.Ingester;
 import in.oogway.plumbox.launcher.Pipeline;
 import in.oogway.plumbox.launcher.Sink;
@@ -19,7 +21,7 @@ class PlumboxTest extends LocalTester {
     private String[] new_transformations() {
         return new String[]{
                 "in.oogway.plumbox.ActionsTransformation",
-                "in.oogway.plumbox.ShowDf"
+                "in.oogway.plumbox.cli.testing.transformation.ShowDF"
         };
     }
 
