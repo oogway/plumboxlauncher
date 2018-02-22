@@ -35,7 +35,7 @@ task wrapper(type: Wrapper) {
     gradleVersion = '4.5'
 }
 dependencies {
-    compile "in.oogway.plumbox:plumbox:1.0.6"
+    compile "in.oogway.plumbox:plumbox:1.0.7"
     compile group: 'commons-io', name: 'commons-io', version: '2.4'
     compile group: 'log4j', name: 'log4j', version: '1.2.17'
     compile group: 'redis.clients', name: 'jedis', version: '2.9.0'

@@ -1,5 +1,7 @@
 package in.oogway.plumbox.cli;
 
+import in.oogway.plumbox.cli.testing.LocalTester;
+import in.oogway.plumbox.cli.testing.MemoryStorage;
 import in.oogway.plumbox.launcher.Ingester;
 import in.oogway.plumbox.launcher.Pipeline;
 import in.oogway.plumbox.launcher.Sink;

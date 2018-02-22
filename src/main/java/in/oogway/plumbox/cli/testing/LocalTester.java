@@ -1,9 +1,9 @@
-package in.oogway.plumbox.cli;
+package in.oogway.plumbox.cli.testing;
 
 import org.apache.spark.sql.SparkSession;
 
 public class LocalTester {
-    static SparkSession localSession() {
+    protected static SparkSession localSession() {
         return SparkSession
                 .builder()
                 .master("local")
