@@ -1,6 +1,8 @@
 group 'in.oogway.plumbox'
 version '1.0'
 
+apply plugin: 'org.junit.platform.gradle.plugin'
+
 apply plugin: 'groovy'
 apply plugin: 'java'
 apply plugin: 'application'
@@ -9,7 +11,7 @@ mainClassName = "in.oogway.plumbox.cli.Main"
 
 sourceCompatibility = 1.8
 
-ext.junitJupiterVersion  = '5.0.0'
+ext.junitJupiterVersion  = '5.1.0'
 
 repositories {
     mavenCentral()
@@ -50,7 +52,16 @@ dependencies {
     // JUnit Jupiter API and TestEngine implementation
     testCompile("org.junit.jupiter:junit-jupiter-api:${junitJupiterVersion}")
     testRuntime("org.junit.jupiter:junit-jupiter-engine:${junitJupiterVersion}")
-    testCompile "org.spockframework:spock-core:1.1-groovy-2.4"
+}
+
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath ("org.junit.platform:junit-platform-gradle-plugin:1.1.0")
+    }
 }
 
 task createCLIJar (type: Jar) {
@@ -75,4 +86,8 @@ task createLauncherJar (type: Jar) {
     zip64 true
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
     with jar
+}
+
+junitPlatform {
+    details 'tree'
 }
