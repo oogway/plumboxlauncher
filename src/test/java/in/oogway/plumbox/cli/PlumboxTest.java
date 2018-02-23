@@ -23,10 +23,9 @@ class PlumboxTest extends LocalTester {
         Plumbox pb = new Plumbox(new MemoryStorage());
 
         Source s = new Source(new HashMap<String, String>(){{
-            put("format", "jdbc");
-            put("driver", "com.mysql.jdbc.Driver");
-            put("url", "jdbc:mysql://127.0.0.1:3306/test_db?user=root&password=password");
-            put("dbtable", "student");
+            put("format", "json");
+            put("multiline", "true");
+            put("path", "src/test/resources/input_source_file.json");
         }});
 
         String sourceId = pb.declare(s);
@@ -50,6 +49,4 @@ class PlumboxTest extends LocalTester {
             e.printStackTrace();
         }
     }
-
 }
-
