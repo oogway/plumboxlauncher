@@ -17,7 +17,7 @@ class PlumboxTest extends LocalTester {
     }
 
     private String[] new_transformations() {
-        return new String[]{
+        return new String[] {
                 "in.oogway.plumbox.ActionsTransformation",
                 "in.oogway.plumbox.ShowDf"
         };
@@ -58,19 +58,17 @@ class PlumboxTest extends LocalTester {
         }
     }
 
-
     @Test
     void testMongoIngester() {
         Plumbox pb = new Plumbox(new MemoryStorage());
-        String input_uri = System.getenv("INPUT_URI");
-        
-        Source s = new Source(new HashMap<String, String>(){{
-            //put("format", "jdbc");
-            //put("driver", "com.mysql.jdbc.Driver");
-            put("uri", input_uri);
-            //put("dbtable", "student");
-        }});
+        String input = System.getenv("INPUT_URI");
+        String pipeline_data = "[{$match:{organization:ObjectId('5719c66d1a6cca0a00c1199e')}},{$project:{user_created:1,team:1,date_created:1,state:1}}]";
 
+        Source s = new Source(new HashMap<String, String>(){{
+            put("format", "com.mongodb.spark.sql.DefaultSource");
+            put("spark.mongodb.input.uri", input);
+            put("pipeline", pipeline_data);
+        }});
 
         String sourceId = pb.declare(s);
 
@@ -84,7 +82,8 @@ class PlumboxTest extends LocalTester {
         String iId = pb.declare(ig);
 
         try {
-            ig.execute(pb.getDriver(), localMongoSession(input_uri));
+
+            ig.execute(pb.getDriver(), localSession());
 
         } catch (IllegalAccessException e) {
             e.printStackTrace();
