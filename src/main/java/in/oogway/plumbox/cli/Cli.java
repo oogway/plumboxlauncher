@@ -1,12 +1,10 @@
 package in.oogway.plumbox.cli;
 
 import in.oogway.plumbox.config.SparkConfig;
-import in.oogway.plumbox.launcher.Ingester;
-import in.oogway.plumbox.launcher.Pipeline;
-import in.oogway.plumbox.launcher.Source;
-import in.oogway.plumbox.launcher.View;
+import in.oogway.plumbox.launcher.*;
 import org.apache.commons.cli.*;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.spark.sql.SparkSession;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -15,7 +13,6 @@ import java.util.Properties;
 
 public class Cli {
     private static HashMap<String, CliHandler> handlers = new HashMap<>();
-    private static Option property = null;
     private static Options options = new Options();
     private static CommandLineParser bparser = new DefaultParser();
 
@@ -27,8 +24,15 @@ public class Cli {
 
         handlers.put("sync", (Plumbox pb, HashMap<String, String> ns) -> {
             Ingester i = (Ingester) pb.get(ns.get("id"), Ingester.class);
+
             SparkConfig sc = new SparkConfig("Plumbox Launcher");
-            i.execute(pb.getDriver(), sc.getSession());
+            SparkSession ss = sc.getSession();
+
+            //Load hadoop configuration passed in ns.
+            HadoopSource hadoopSource = new HadoopSource(ns);
+            hadoopSource.load(ss);
+
+            i.execute(pb.getDriver(), ss);
         });
 
         handlers.put("declare-source", (Plumbox pb, HashMap<String, String> ns) -> {
@@ -101,6 +105,7 @@ public class Cli {
             System.exit(127);
         }
 
+        System.out.println(options);
         CommandLine line = bparser.parse(options, args);
         HashMap<String, String> options = new HashMap<>();
         Properties ns = line.getOptionProperties("P");

@@ -45,7 +45,8 @@ dependencies {
     compile group: 'org.json', name: 'json', version: '20180130'
     compile 'com.google.code.gson:gson:2.8.2'
     compile group: 'commons-cli', name: 'commons-cli', version: '1.4'
-
+    compile 'com.amazonaws:aws-java-sdk-pom:1.10.34'
+    compile 'org.apache.hadoop:hadoop-aws:2.7.2'
 
     // JUnit Jupiter API and TestEngine implementation
     testCompile("org.junit.jupiter:junit-jupiter-api:${junitJupiterVersion}")

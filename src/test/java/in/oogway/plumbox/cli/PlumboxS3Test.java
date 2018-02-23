@@ -2,15 +2,13 @@ package in.oogway.plumbox.cli;
 
 import in.oogway.plumbox.cli.testing.LocalTester;
 import in.oogway.plumbox.cli.testing.MemoryStorage;
-import in.oogway.plumbox.launcher.Ingester;
-import in.oogway.plumbox.launcher.Pipeline;
-import in.oogway.plumbox.launcher.Sink;
-import in.oogway.plumbox.launcher.Source;
+import in.oogway.plumbox.launcher.*;
+import org.apache.spark.sql.SparkSession;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 
-class PlumboxTest extends LocalTester {
+class PlumboxS3Test extends LocalTester {
     private String[] transformations() {
         return new String[]{
                 "in.oogway.plumbox.SampleTransformation",
@@ -23,10 +21,8 @@ class PlumboxTest extends LocalTester {
         Plumbox pb = new Plumbox(new MemoryStorage());
 
         Source s = new Source(new HashMap<String, String>(){{
-            put("format", "jdbc");
-            put("driver", "com.mysql.jdbc.Driver");
-            put("url", "jdbc:mysql://127.0.0.1:3306/test_db?user=root&password=password");
-            put("dbtable", "student");
+            put("format", "json");
+            put("path", System.getenv("SOURCE_URL"));
         }});
 
         String sourceId = pb.declare(s);
@@ -40,8 +36,17 @@ class PlumboxTest extends LocalTester {
         Ingester ig = new Ingester(sourceId, sinkId, tId);
         String iId = pb.declare(ig);
 
+        SparkSession ss = localSession();
+
+        HadoopSource hadoopSource = new HadoopSource(new HashMap<String, String>(){{
+                put("fs.s3n.awsAccessKeyId", System.getenv("AWS_ACCESS_KEY"));
+                put("fs.s3n.awsSecretAccessKey", System.getenv("AWS_SECRET_KEY"));
+        }});
+
+        hadoopSource.load(ss);
+
         try {
-            ig.execute(pb.getDriver(), localSession());
+            ig.execute(pb.getDriver(), ss);
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         } catch (InstantiationException e) {
