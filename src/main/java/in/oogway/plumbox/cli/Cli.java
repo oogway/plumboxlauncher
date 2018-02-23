@@ -105,7 +105,6 @@ public class Cli {
             System.exit(127);
         }
 
-        System.out.println(options);
         CommandLine line = bparser.parse(options, args);
         HashMap<String, String> options = new HashMap<>();
         Properties ns = line.getOptionProperties("P");
