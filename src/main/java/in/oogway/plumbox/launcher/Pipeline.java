@@ -27,8 +27,11 @@ public class Pipeline {
     public ArrayList<Transformer> inflate() throws ClassNotFoundException, IllegalAccessException, InstantiationException {
         ArrayList<Transformer> objs = new ArrayList<>();
         for (String className: getStages()) {
-            Class act = Class.forName(className.trim());
-            objs.add((Transformer) act.newInstance());
+            ExtensionLoader<Transformer> loader = new ExtensionLoader<Transformer>();
+            Transformer t = loader.LoadClass("", "nl.changer.jobs.ActionsTransformation", Transformer.class);
+            //Class act = Class.forName(className.trim());
+            //objs.add((Transformer) act.newInstance());
+            objs.add(t);
         }
         return objs;
     }
