@@ -6,7 +6,8 @@ apply plugin: 'maven-publish'
 
 apply plugin: 'groovy'
 apply plugin: 'java'
-mainClassName = "in.oogway.plumbox.cli.Main"
+
+//mainClassName = "in.oogway.plumbox.cli.Main"
 
 sourceCompatibility = 1.8
 
