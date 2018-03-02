@@ -21,15 +21,17 @@ public class Cli {
 
     static {
         Option opt = Option.builder("P").hasArgs()
-                .valueSeparator('=')
                 .build();
+
         options.addOption(opt);
 
+        /*
         handlers.put("sync", (Plumbox pb, HashMap<String, String> ns) -> {
             Ingester i = (Ingester) pb.get(ns.get("id"), Ingester.class);
             SparkConfig sc = new SparkConfig("Plumbox Launcher");
             i.execute(pb.getDriver(), sc.getSession());
         });
+        */
 
         handlers.put("declare-source", (Plumbox pb, HashMap<String, String> ns) -> {
             pb.declare(new Source(ns));
