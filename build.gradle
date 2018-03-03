@@ -1,13 +1,13 @@
 group 'in.oogway.plumbox'
-version '1.0'
+version '1.0.3'
 
 apply plugin: 'org.junit.platform.gradle.plugin'
+apply plugin: 'maven-publish'
 
 apply plugin: 'groovy'
 apply plugin: 'java'
-apply plugin: 'application'
 
-mainClassName = "in.oogway.plumbox.cli.Main"
+//mainClassName = "in.oogway.plumbox.cli.Main"
 
 sourceCompatibility = 1.8
 
@@ -36,6 +36,15 @@ allprojects {
 task wrapper(type: Wrapper) {
     gradleVersion = '4.5'
 }
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+}
+
 dependencies {
     compile "in.oogway.plumbox:plumbox:1.0.7"
     compile group: 'commons-io', name: 'commons-io', version: '2.4'
@@ -47,7 +56,6 @@ dependencies {
     compile group: 'org.json', name: 'json', version: '20180130'
     compile 'com.google.code.gson:gson:2.8.2'
     compile group: 'commons-cli', name: 'commons-cli', version: '1.4'
-
 
     // JUnit Jupiter API and TestEngine implementation
     testCompile("org.junit.jupiter:junit-jupiter-api:${junitJupiterVersion}")
@@ -72,7 +80,9 @@ task createCLIJar (type: Jar) {
     }
     baseName = "plumbox-cli"
     zip64 true
-    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    from(sourceSets.main.output) {
+        include "/java/in/oogway/plumbox/cli/**"
+    }
     with jar
 }
 
@@ -80,11 +90,14 @@ task createLauncherJar (type: Jar) {
     manifest {
         attributes 'Implementation-Title': 'Gradle Jar for Launcher Spark Jobs',
                 'Implementation-Version': version,
-                'Main-Class': 'in.oogway.plumbox.launcher.Launcher'
+                'Main-Class': 'in.oogway.plumbox.cli.Launcher'
     }
     baseName = "plumbox-launcher"
     zip64 true
-    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+
+    from(sourceSets.main.output) {
+        include "/java/in/oogway/plumbox/launcher/**"
+    }
     with jar
 }
 

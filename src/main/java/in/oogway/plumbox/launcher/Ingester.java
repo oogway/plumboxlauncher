@@ -30,7 +30,7 @@ public class Ingester {
             sourceData = t.run(sourceData);
         }
 
-        Sink snk = (Sink) driver.read(sink, Sink.class);
-        snk.write(sourceData);
+        //Sink snk = (Sink) driver.read(sink, Sink.class);
+        //snk.write(sourceData);
     }
 }
