@@ -1,6 +1,5 @@
 package in.oogway.plumbox.cli;
 
-import in.oogway.plumbox.config.SparkConfig;
 import in.oogway.plumbox.launcher.Ingester;
 import in.oogway.plumbox.launcher.Pipeline;
 import in.oogway.plumbox.launcher.Source;
@@ -24,14 +23,6 @@ public class Cli {
                 .build();
 
         options.addOption(opt);
-
-        /*
-        handlers.put("sync", (Plumbox pb, HashMap<String, String> ns) -> {
-            Ingester i = (Ingester) pb.get(ns.get("id"), Ingester.class);
-            SparkConfig sc = new SparkConfig("Plumbox Launcher");
-            i.execute(pb.getDriver(), sc.getSession());
-        });
-        */
 
         handlers.put("declare-source", (Plumbox pb, HashMap<String, String> ns) -> {
             pb.declare(new Source(ns));
@@ -90,7 +81,7 @@ public class Cli {
         });
     }
 
-    public static void execute(String[] args) throws IllegalAccessException, InstantiationException, ClassNotFoundException, ParseException {
+    public static void execute(String[] args) throws Exception {
         if (args.length < 2) {
             System.out.println(String.format("Must provide a subcommand"));
             System.exit(127);

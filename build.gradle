@@ -14,22 +14,16 @@ sourceCompatibility = 1.8
 ext.junitJupiterVersion  = '5.1.0'
 
 repositories {
+    mavenLocal()
     mavenCentral()
     jcenter()
 }
 
 allprojects {
     repositories {
+        mavenLocal()
         mavenCentral()
         jcenter()
-
-        maven {
-            url "s3://plumbox-artifacts/releases"
-            credentials(AwsCredentials) {
-                accessKey AWS_ACCESS_KEY
-                secretKey AWS_SECRET_KEY
-            }
-        }
     }
 }
 
@@ -46,7 +40,6 @@ publishing {
 }
 
 dependencies {
-    compile "in.oogway.plumbox:plumbox:1.0.7"
     compile group: 'commons-io', name: 'commons-io', version: '2.4'
     compile group: 'log4j', name: 'log4j', version: '1.2.17'
     compile group: 'redis.clients', name: 'jedis', version: '2.9.0'
@@ -57,48 +50,33 @@ dependencies {
     compile 'com.google.code.gson:gson:2.8.2'
     compile group: 'commons-cli', name: 'commons-cli', version: '1.4'
 
+
     // JUnit Jupiter API and TestEngine implementation
     testCompile("org.junit.jupiter:junit-jupiter-api:${junitJupiterVersion}")
     testRuntime("org.junit.jupiter:junit-jupiter-engine:${junitJupiterVersion}")
 }
 
-
 buildscript {
     repositories {
+        mavenLocal()
         mavenCentral()
+        jcenter()
     }
     dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.2'
         classpath ("org.junit.platform:junit-platform-gradle-plugin:1.1.0")
     }
 }
 
-task createCLIJar (type: Jar) {
-    manifest {
-        attributes 'Implementation-Title': 'Gradle Jar for CLI',
-                'Implementation-Version': version,
-                'Main-Class': 'in.oogway.plumbox.cli.Main'
-    }
-    baseName = "plumbox-cli"
-    zip64 true
-    from(sourceSets.main.output) {
-        include "/java/in/oogway/plumbox/cli/**"
-    }
-    with jar
-}
+apply plugin: 'com.github.johnrengelman.shadow'
 
-task createLauncherJar (type: Jar) {
+shadowJar {
     manifest {
-        attributes 'Implementation-Title': 'Gradle Jar for Launcher Spark Jobs',
-                'Implementation-Version': version,
-                'Main-Class': 'in.oogway.plumbox.cli.Launcher'
+        attributes 'Main-Class': 'in.oogway.plumbox.cli.Main'
     }
-    baseName = "plumbox-launcher"
-    zip64 true
-
-    from(sourceSets.main.output) {
-        include "/java/in/oogway/plumbox/launcher/**"
-    }
-    with jar
+    baseName = 'plumbox-cli'
+    version = version
+    zip64 = true
 }
 
 junitPlatform {

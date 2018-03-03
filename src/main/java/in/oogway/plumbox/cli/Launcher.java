@@ -1,11 +1,8 @@
 package in.oogway.plumbox.cli;
 
-import in.oogway.plumbox.cli.testing.MemoryStorage;
 import in.oogway.plumbox.launcher.Ingester;
 import in.oogway.plumbox.launcher.StorageDriver;
 import org.apache.spark.sql.SparkSession;
-
-import java.util.HashMap;
 
 public class Launcher {
 
