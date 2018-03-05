@@ -1,5 +1,6 @@
 package in.oogway.plumbox.launcher;
 
+import in.oogway.plumbox.transformer.Transformer;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
@@ -27,7 +28,7 @@ public class Ingester {
         // Run all transformations.
         for (Transformer t:
                 transformers) {
-            sourceData = t.run(sourceData);
+            sourceData = t.run(ss, sourceData);
         }
 
         //Sink snk = (Sink) driver.read(sink, Sink.class);

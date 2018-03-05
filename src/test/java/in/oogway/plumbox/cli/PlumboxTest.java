@@ -8,25 +8,21 @@ import in.oogway.plumbox.launcher.Sink;
 import in.oogway.plumbox.launcher.Source;
 import org.junit.jupiter.api.Test;
 
-import java.util.HashMap;
-
 class PlumboxTest extends LocalTester {
     private String[] transformations() {
         return new String[]{
+                // Always add a new custom source transformation in the pipeline before other transformations.
+                "in.oogway.plumbox.JSONSource",
                 "in.oogway.plumbox.SampleTransformation",
                 "in.oogway.plumbox.cli.testing.transformation.ShowDF"
         };
     }
-
     @Test
     void testIngester() {
         Plumbox pb = new Plumbox(new MemoryStorage());
 
-        Source s = new Source(new HashMap<String, String>(){{
-            put("format", "json");
-            put("multiline", "true");
-            put("path", "src/test/resources/input_source_file.json");
-        }});
+        // Always create a dummy source.
+        Source s = new Source();
 
         String sourceId = pb.declare(s);
 

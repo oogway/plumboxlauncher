@@ -25,7 +25,7 @@ public class Cli {
         options.addOption(opt);
 
         handlers.put("declare-source", (Plumbox pb, HashMap<String, String> ns) -> {
-            pb.declare(new Source(ns));
+            pb.declare(new Source());
         });
 
         handlers.put("declare-ingester", (Plumbox pb, HashMap<String, String> ns) -> {

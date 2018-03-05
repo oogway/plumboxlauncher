@@ -1,10 +1,7 @@
 package in.oogway.plumbox;
 
-import in.oogway.plumbox.launcher.Transformer;
-import org.apache.spark.sql.Column;
-import org.apache.spark.sql.Dataset;
-import org.apache.spark.sql.Row;
-import org.apache.spark.sql.functions;
+import in.oogway.plumbox.transformer.Transformer;
+import org.apache.spark.sql.*;
 
 public class SampleTransformation implements Transformer {
     private Column getCurrentTS() {
@@ -13,7 +10,7 @@ public class SampleTransformation implements Transformer {
     }
 
     @Override
-    public Dataset<Row> run(Dataset<Row> df) {
+    public Dataset<Row> run(SparkSession sparkSession, Dataset<Row> df) {
         return df.withColumn("processed_on", getCurrentTS());
     }
 }
