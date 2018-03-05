@@ -16,7 +16,7 @@ public class JSONSource implements Transformer{
     public Dataset<Row> run(SparkSession sparkSession, Dataset<Row> dataset) {
 
         options = new HashMap<String, String>(){{
-            put("format", System.getProperty("source_format"));
+            put("format", System.getProperty("format"));
             put("multiline", System.getProperty("multiline"));
             put("path", System.getProperty("path"));
         }};

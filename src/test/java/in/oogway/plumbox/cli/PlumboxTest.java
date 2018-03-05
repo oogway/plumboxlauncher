@@ -19,6 +19,11 @@ class PlumboxTest extends LocalTester {
     }
     @Test
     void testIngester() {
+        System.setProperty("format","json");
+        System.setProperty("multiline", "true");
+        System.setProperty("path","src/test/resources/input_source_file.json");
+
+
         Plumbox pb = new Plumbox(new MemoryStorage());
 
         // Always create a dummy source.
