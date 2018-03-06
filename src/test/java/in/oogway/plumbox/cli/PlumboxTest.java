@@ -8,6 +8,8 @@ import in.oogway.plumbox.launcher.Sink;
 import in.oogway.plumbox.launcher.Source;
 import org.junit.jupiter.api.Test;
 
+import java.util.HashMap;
+
 class PlumboxTest extends LocalTester {
     private String[] transformations() {
         return new String[]{
@@ -26,8 +28,9 @@ class PlumboxTest extends LocalTester {
 
         Plumbox pb = new Plumbox(new MemoryStorage());
 
+        HashMap<String, String> emptyHash = new HashMap<>();
         // Always create a dummy source.
-        Source s = new Source();
+        Source s = new Source(emptyHash);
 
         String sourceId = pb.declare(s);
 
