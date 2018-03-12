@@ -24,22 +24,37 @@ allprojects {
         mavenLocal()
         mavenCentral()
         jcenter()
+        maven {
+            url "s3://plumbox-artifacts/releases"
+            credentials(AwsCredentials) {
+                accessKey AWS_ACCESS_KEY
+                secretKey AWS_SECRET_KEY
+            }
+        }
     }
 }
 
 task wrapper(type: Wrapper) {
     gradleVersion = '4.5'
 }
+task sourceJar(type: Jar) {
+    from sourceSets.main.allJava
+}
 
 publishing {
     publications {
         mavenJava(MavenPublication) {
             from components.java
+
+            artifact sourceJar {
+                classifier "sources"
+            }
         }
     }
 }
 
 dependencies {
+    compile "in.oogway.plumbox:plumbox:1.0.10"
     compile group: 'commons-io', name: 'commons-io', version: '2.4'
     compile group: 'log4j', name: 'log4j', version: '1.2.17'
     compile group: 'redis.clients', name: 'jedis', version: '2.9.0'

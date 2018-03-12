@@ -15,6 +15,9 @@ public class Source {
     }
 
     public Dataset<Row> load(SparkSession ss) {
+        if(options.isEmpty()){
+            return ss.emptyDataFrame();
+        }
         DataFrameReader x = ss.read();
 
         if(options.containsKey("format")) {
