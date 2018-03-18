@@ -1,9 +1,7 @@
 package in.oogway.plumbox.cli;
 
-import in.oogway.plumbox.launcher.Ingester;
-import in.oogway.plumbox.launcher.Pipeline;
-import in.oogway.plumbox.launcher.Source;
-import in.oogway.plumbox.launcher.View;
+import in.oogway.plumbox.launcher.*;
+import in.oogway.plumbox.launcher.storage.RedisStorage;
 import org.apache.commons.cli.*;
 import org.apache.commons.lang3.StringUtils;
 

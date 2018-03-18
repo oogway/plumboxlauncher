@@ -1,16 +1,19 @@
 package in.oogway.plumbox.cli;
 
 import in.oogway.plumbox.cli.testing.LocalTester;
-import in.oogway.plumbox.cli.testing.MemoryStorage;
-import in.oogway.plumbox.launcher.Ingester;
-import in.oogway.plumbox.launcher.Pipeline;
-import in.oogway.plumbox.launcher.Sink;
-import in.oogway.plumbox.launcher.Source;
+import in.oogway.plumbox.launcher.*;
+import in.oogway.plumbox.launcher.storage.LauncherStorage;
+import in.oogway.plumbox.launcher.storage.MemoryStorage;
+import in.oogway.plumbox.launcher.storage.LauncherStorageDriver;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 
 class PlumboxTest extends LocalTester {
+    private String ingesterId;
+    private LauncherStorageDriver driver;
+
     private String[] transformations() {
         return new String[]{
                 // Always add a new custom source transformation in the pipeline before other transformations.
@@ -19,32 +22,14 @@ class PlumboxTest extends LocalTester {
                 "in.oogway.plumbox.cli.testing.transformation.ShowDF"
         };
     }
+
     @Test
     void testIngester() {
-        System.setProperty("format","json");
-        System.setProperty("multiline", "true");
-        System.setProperty("path","src/test/resources/input_source_file.json");
-
-
-        Plumbox pb = new Plumbox(new MemoryStorage());
-
-        HashMap<String, String> emptyHash = new HashMap<>();
-        // Always create a dummy source.
-        Source s = new Source(emptyHash);
-
-        String sourceId = pb.declare(s);
-
-        Sink sk = new Sink("json", "output", "");
-        String sinkId = pb.declare(sk);
-
-        Pipeline t = new Pipeline("".join(",", transformations()));
-        String tId = pb.declare(t);
-
-        Ingester ig = new Ingester(sourceId, sinkId, tId);
-        String iId = pb.declare(ig);
+        LauncherStorage<Ingester> storage = new LauncherStorage<>(driver);
+        Ingester ingester = storage.read(ingesterId, Ingester.class);
 
         try {
-            ig.execute(pb.getDriver(), localSession());
+            ingester.execute(storage, localSession());
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         } catch (InstantiationException e) {
@@ -52,5 +37,34 @@ class PlumboxTest extends LocalTester {
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
+    }
+
+    @BeforeEach
+    void setUp() {
+        // Attributes for Source.
+        System.setProperty("format","json");
+        System.setProperty("multiline", "true");
+        System.setProperty("path","src/test/resources/input_source_file.json");
+
+        // Initialize a common driver to be used.
+        driver = new MemoryStorage();
+
+        Plumbox<Object> pb = new Plumbox<>(driver);
+
+        // Always create a dummy source.
+        Source s = new Source(new HashMap<>());
+        String sourceId = pb.declare(s);
+
+        // Save a new Sink.
+        Sink sk = new Sink("json", "output", "");
+        String sinkId = pb.declare(sk);
+
+        // Declare a new Pipeline
+        Pipeline t = new Pipeline(String.join(",", transformations()));
+        String tId = pb.declare(t);
+
+        // Save a new Ingester.
+        Ingester ig = new Ingester(sourceId, sinkId, tId);
+        ingesterId = pb.declare(ig);
     }
 }

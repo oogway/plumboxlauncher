@@ -1,48 +1,47 @@
-package in.oogway.plumbox.cli;
+package in.oogway.plumbox.launcher.storage;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import in.oogway.plumbox.launcher.StorageDriver;
-import redis.clients.jedis.Jedis;
 
 import java.util.HashMap;
 import java.util.Set;
 import java.util.UUID;
 
-public class RedisStorage<T> implements StorageDriver<T> {
+public class LauncherStorage<T> {
     private final Gson gson;
-    private Jedis jedis;
+    private final LauncherStorageDriver driver;
 
-    public RedisStorage(String host) {
+    public LauncherStorage(LauncherStorageDriver driver) {
         gson = new GsonBuilder().create();
-        jedis = new Jedis(host);
+        this.driver = driver;
     }
 
     public T read(final String key, final Class<T> cls) {
-        final T data = gson.fromJson(jedis.get(key), cls);
+        final T data = gson.fromJson(driver.read(key), cls);
         return data;
     }
 
-    public String write(String path, T data, String type) {
+    public String write(Object data, String type) {
         String json = gson.toJson(data);
 
         String uuid = UUID.randomUUID().toString();
         String key = String.format("%s-%s", type, uuid);
 
-        jedis.set(key, json);
+        driver.write(key, json);
         System.out.println("Redis key: "+ key);
-        return json;
+        return key;
     }
 
     public HashMap<String, T> readAll(String pattern, Class<T> cls) {
         HashMap<String, T> arr = new HashMap<>();
 
-        Set<String> names = jedis.keys(pattern.concat("*"));
+        Set<String> names = driver.getAllKeys(pattern);
         for (String s : names) {
-            T data = gson.fromJson(jedis.get(s), cls);
+            T data = gson.fromJson(driver.read(s), cls);
             arr.put(s, data);
         }
 
         return arr;
     }
 }
+
