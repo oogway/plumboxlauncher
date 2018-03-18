@@ -1,23 +1,34 @@
 package in.oogway.plumbox.cli;
 
-import in.oogway.plumbox.launcher.Ingester;
-import in.oogway.plumbox.launcher.StorageDriver;
+import in.oogway.plumbox.launcher.*;
+import in.oogway.plumbox.launcher.storage.FileStorage;
+import in.oogway.plumbox.launcher.storage.LauncherStorage;
+import in.oogway.plumbox.launcher.storage.RedisStorage;
+import in.oogway.plumbox.launcher.storage.LauncherStorageDriver;
 import org.apache.spark.sql.SparkSession;
 
-public class Launcher {
+import java.io.IOException;
 
-    public static void main(String args[]) throws IllegalAccessException, ClassNotFoundException, InstantiationException {
+public class Launcher {
+    public static void main(String args[]) throws IllegalAccessException, ClassNotFoundException, InstantiationException, IOException {
 
         SparkSession ss = SparkSession
                 .builder()
-                .appName("Plumbox Launcher Test")
+                .appName("Plumbox Launcher")
                 .getOrCreate();
 
-        // Read from system properties
-        String ingester_id = System.getProperty("ingester_id");
-        StorageDriver memDriver = new RedisStorage(System.getProperty("redis_host"));
+        LauncherStorageDriver driver;
+        if (System.getProperty("storage_path") != "") {
+            driver = new FileStorage(System.getProperty("storage_path"));
+        } else {
+            driver = new RedisStorage(System.getProperty("redis_host"));
+        }
 
-        Ingester i = (Ingester) memDriver.read(ingester_id, Ingester.class);
-        i.execute(memDriver, ss);
+        // Read from system properties
+        String ingesterId = System.getProperty("ingester_id");
+
+        LauncherStorage<Ingester> storage = new LauncherStorage<>(driver);
+        Ingester i = storage.read(ingesterId, Ingester.class);
+        i.execute(storage, ss);
     }
 }

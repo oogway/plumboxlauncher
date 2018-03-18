@@ -1,5 +1,21 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.2'
+        classpath ("org.junit.platform:junit-platform-gradle-plugin:1.1.0")
+    }
+}
+
+plugins {
+    id "com.jfrog.bintray" version "1.7.3"
+}
+
 group 'in.oogway.plumbox'
-version '1.0.3'
+version '1.1.0'
 
 apply plugin: 'org.junit.platform.gradle.plugin'
 apply plugin: 'maven-publish'
@@ -17,6 +33,11 @@ repositories {
     mavenLocal()
     mavenCentral()
     jcenter()
+    repositories {
+        maven {
+            url  "https://dl.bintray.com/oogway/Plumbox"
+        }
+    }
 }
 
 allprojects {
@@ -24,37 +45,23 @@ allprojects {
         mavenLocal()
         mavenCentral()
         jcenter()
-        maven {
-            url "s3://plumbox-artifacts/releases"
-            credentials(AwsCredentials) {
-                accessKey AWS_ACCESS_KEY
-                secretKey AWS_SECRET_KEY
-            }
-        }
     }
 }
 
 task wrapper(type: Wrapper) {
     gradleVersion = '4.5'
 }
-task sourceJar(type: Jar) {
-    from sourceSets.main.allJava
-}
 
 publishing {
     publications {
         mavenJava(MavenPublication) {
             from components.java
-
-            artifact sourceJar {
-                classifier "sources"
-            }
         }
     }
 }
 
 dependencies {
-    compile "in.oogway.plumbox:plumbox:1.0.10"
+    compile "in.oogway.plumbox:plumbox:1.1.1"
     compile group: 'commons-io', name: 'commons-io', version: '2.4'
     compile group: 'log4j', name: 'log4j', version: '1.2.17'
     compile group: 'redis.clients', name: 'jedis', version: '2.9.0'
@@ -71,18 +78,6 @@ dependencies {
     testRuntime("org.junit.jupiter:junit-jupiter-engine:${junitJupiterVersion}")
 }
 
-buildscript {
-    repositories {
-        mavenLocal()
-        mavenCentral()
-        jcenter()
-    }
-    dependencies {
-        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.2'
-        classpath ("org.junit.platform:junit-platform-gradle-plugin:1.1.0")
-    }
-}
-
 apply plugin: 'com.github.johnrengelman.shadow'
 
 shadowJar {
@@ -96,4 +91,24 @@ shadowJar {
 
 junitPlatform {
     details 'tree'
+}
+
+
+if (project.hasProperty("bintray_username")) {
+    bintray {
+        user = property('bintray_username')
+        key = property('bintray_password')
+        configurations = ['archives']
+        pkg {
+            publish = true
+            repo = 'Plumbox'
+            name = 'plumbox-launcher'
+            desc = "Plumbox Launcher to trigger Pipelines"
+            userOrg = 'oogway'
+            licenses = ['Apache-2.0']
+            websiteUrl = 'https://github.com/oogway/plumboxlauncher'
+            issueTrackerUrl = 'https://github.com/oogway/plumboxlauncher/issues'
+            vcsUrl = 'https://github.com/oogway/plumboxlauncher'
+        }
+    }
 }

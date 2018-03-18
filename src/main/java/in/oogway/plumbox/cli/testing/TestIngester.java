@@ -1,10 +1,8 @@
 package in.oogway.plumbox.cli.testing;
 
 import in.oogway.plumbox.cli.Plumbox;
-import in.oogway.plumbox.launcher.Ingester;
-import in.oogway.plumbox.launcher.Pipeline;
-import in.oogway.plumbox.launcher.Sink;
-import in.oogway.plumbox.launcher.Source;
+import in.oogway.plumbox.launcher.*;
+import in.oogway.plumbox.launcher.storage.MemoryStorage;
 import org.apache.spark.sql.SparkSession;
 
 import java.util.HashMap;

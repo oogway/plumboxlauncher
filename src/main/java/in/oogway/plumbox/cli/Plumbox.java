@@ -1,23 +1,24 @@
 package in.oogway.plumbox.cli;
 
-import in.oogway.plumbox.launcher.StorageDriver;
+import in.oogway.plumbox.launcher.storage.LauncherStorage;
+import in.oogway.plumbox.launcher.storage.LauncherStorageDriver;
 
 import java.util.HashMap;
 
 public class Plumbox<T> {
-    private StorageDriver<T> driver;
+    private LauncherStorage<T> driver;
 
-    public Plumbox(StorageDriver<T> driver) {
-        this.driver = driver;
+    public Plumbox(LauncherStorageDriver driver) {
+        this.driver = new LauncherStorage(driver);
     }
 
-    public StorageDriver<T> getDriver() {
+    public LauncherStorage<T> getDriver() {
         return driver;
     }
 
     public String declare(T inp) {
         String prefix = inp.getClass().getSimpleName().toLowerCase();
-        return driver.write("", inp, prefix);
+        return driver.write(inp, prefix);
     }
 
     public T get(String id, Class<T> cls) {
