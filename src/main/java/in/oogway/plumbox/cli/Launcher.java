@@ -18,10 +18,13 @@ public class Launcher {
                 .getOrCreate();
 
         LauncherStorageDriver driver;
-        if (System.getProperty("storage_path") != "") {
-            driver = new FileStorage(System.getProperty("storage_path"));
+
+        String storagePath = System.getProperty("storage_path", "");
+        if (storagePath != "") {
+            driver = new FileStorage(storagePath);
         } else {
-            driver = new RedisStorage(System.getProperty("redis_host"));
+            String redisHost = System.getProperty("REDIS_HOST", "localhost");
+            driver = new RedisStorage(redisHost);
         }
 
         // Read from system properties

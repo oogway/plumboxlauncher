@@ -1,9 +1,11 @@
 package in.oogway.plumbox.cli;
 
-import in.oogway.plumbox.launcher.*;
-import in.oogway.plumbox.launcher.storage.RedisStorage;
+import in.oogway.plumbox.launcher.Ingester;
+import in.oogway.plumbox.launcher.Pipeline;
+import in.oogway.plumbox.launcher.Source;
+import in.oogway.plumbox.launcher.View;
+import in.oogway.plumbox.launcher.storage.LauncherStorageDriver;
 import org.apache.commons.cli.*;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -79,7 +81,7 @@ public class Cli {
         });
     }
 
-    public static void execute(String[] args) throws Exception {
+    public static void execute(String[] args, LauncherStorageDriver driver) throws Exception {
         if (args.length < 2) {
             System.out.println(String.format("Must provide a subcommand"));
             System.exit(127);
@@ -102,12 +104,7 @@ public class Cli {
             options.put((String) val, (String) ns.get(val));
         }
 
-        String host = System.getProperty("REDIS_HOST");
-        if (StringUtils.isEmpty(host)) {
-            host = "localhost";
-        }
-
-        Plumbox pb = new Plumbox(new RedisStorage(host));
+        Plumbox pb = new Plumbox(driver);
         handler.run(pb, options);
     }
 }
