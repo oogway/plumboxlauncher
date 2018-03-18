@@ -4,10 +4,8 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.nio.file.Path;
+import java.util.*;
 
 public class FileStorage implements LauncherStorageDriver {
     private final File dirFile;
@@ -42,10 +40,35 @@ public class FileStorage implements LauncherStorageDriver {
     @Override
     public String read(String filename) {
         try {
+            System.out.println(dir +  "/" + filename);
             return FileUtils.readFileToString(new File(dir, filename));
         } catch (IOException e) {
             e.printStackTrace();
             return "";
+        }
+    }
+
+    public static List<Path> listFiles(String rootDirectory) {
+        List<Path> files = new ArrayList<>();
+        listFiles(rootDirectory, files);
+
+        return files;
+    }
+
+    private static void listFiles(String path, List<Path> collectedFiles) {
+        File root = new File(path);
+        File[] files = root.listFiles();
+
+        if (files == null) {
+            return;
+        }
+
+        for (File file : files) {
+            if (file.isDirectory()) {
+                listFiles(file.getAbsolutePath(), collectedFiles);
+            } else {
+                collectedFiles.add(file.toPath());
+            }
         }
     }
 
@@ -54,6 +77,7 @@ public class FileStorage implements LauncherStorageDriver {
         File[] files = dirFile.listFiles((d, name) -> name.startsWith(pattern));
         ArrayList<String> selected = new ArrayList<String>(){};
         for (File f: files) {
+            System.out.println(f.getName());
             selected.add(f.getName());
         }
         return new HashSet<String>(selected);

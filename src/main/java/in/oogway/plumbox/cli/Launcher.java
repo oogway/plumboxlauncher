@@ -29,6 +29,9 @@ public class Launcher {
 
         // Read from system properties
         String ingesterId = System.getProperty("ingester_id");
+        if (ingesterId == "") {
+            throw new IllegalArgumentException(String.format("Need valid ingester_id. Found %s", ingesterId));
+        }
 
         LauncherStorage<Ingester> storage = new LauncherStorage<>(driver);
         Ingester i = storage.read(ingesterId, Ingester.class);

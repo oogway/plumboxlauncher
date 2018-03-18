@@ -20,8 +20,13 @@ public class Ingester {
     }
 
     public void execute(LauncherStorage driver, SparkSession ss) throws IllegalAccessException, InstantiationException, ClassNotFoundException {
-        Source s = (Source) driver.read(source, Source.class);
-        Dataset<Row> sourceData = s.load(ss);
+        Dataset<Row> sourceData = ss.emptyDataFrame();
+
+        // There can be Pipelines that load their own data on the way. They dont need a source.
+        if (source != null && !source.equals("")) {
+            Source s = (Source) driver.read(source, Source.class);
+            sourceData = s.load(ss);
+        }
 
         Pipeline tr = (Pipeline) driver.read(pipeline, Pipeline.class);
         ArrayList<Transformer> transformers = tr.inflate();

@@ -21,14 +21,11 @@ public class LauncherStorage<T> {
         return data;
     }
 
-    public String write(Object data, String type) {
+    public String write(Object data, String prefix) {
         String json = gson.toJson(data);
-
-        String uuid = UUID.randomUUID().toString();
-        String key = String.format("%s-%s", type, uuid);
-
+        String key = String.format("%s-%s", prefix, UUID.randomUUID().toString());
         driver.write(key, json);
-        System.out.println("Redis key: "+ key);
+        System.out.println("Key %s "+ key);
         return key;
     }
 
