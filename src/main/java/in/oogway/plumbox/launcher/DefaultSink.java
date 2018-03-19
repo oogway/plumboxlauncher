@@ -4,7 +4,9 @@ import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
 
-public interface Sink {
-    void flush(SparkSession ss, Dataset<Row> output);
+public class DefaultSink implements Sink {
+    @Override
+    public void flush(SparkSession ss, Dataset<Row> output) {
+        output.show();
+    }
 }
-

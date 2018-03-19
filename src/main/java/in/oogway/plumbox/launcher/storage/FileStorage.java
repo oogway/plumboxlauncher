@@ -40,7 +40,6 @@ public class FileStorage implements LauncherStorageDriver {
     @Override
     public String read(String filename) {
         try {
-            System.out.println(dir +  "/" + filename);
             return FileUtils.readFileToString(new File(dir, filename));
         } catch (IOException e) {
             e.printStackTrace();
@@ -77,7 +76,6 @@ public class FileStorage implements LauncherStorageDriver {
         File[] files = dirFile.listFiles((d, name) -> name.startsWith(pattern));
         ArrayList<String> selected = new ArrayList<String>(){};
         for (File f: files) {
-            System.out.println(f.getName());
             selected.add(f.getName());
         }
         return new HashSet<String>(selected);

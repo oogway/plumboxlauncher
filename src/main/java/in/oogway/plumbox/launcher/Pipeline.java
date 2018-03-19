@@ -3,35 +3,20 @@ package in.oogway.plumbox.launcher;
 import in.oogway.plumbox.transformer.Transformer;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class Pipeline {
-    public String stages;
-    private String[] _stages;
+    public String[] stages;
 
-    public Pipeline(String stages) {
+    public Pipeline(String[] stages) {
         this.stages = stages;
-        _stages = stages.split(",");
     }
 
-    public String[] getStages() {
-        return _stages;
-    }
-
-    @Override
-    public String toString() {
-        return "Pipeline{" +
-                "stages='" + stages + '\'' +
-                ", _stages=" + Arrays.toString(_stages) +
-                '}';
-    }
-
-    public ArrayList<Transformer> inflate() throws ClassNotFoundException, IllegalAccessException, InstantiationException {
+    public Transformer[] inflate() throws ClassNotFoundException, IllegalAccessException, InstantiationException {
         ArrayList<Transformer> objs = new ArrayList<>();
-        for (String className: getStages()) {
+        for (String className: stages) {
             Class act = Class.forName(className.trim());
             objs.add((Transformer) act.newInstance());
         }
-        return objs;
+        return objs.toArray(new Transformer[0]);
     }
 }

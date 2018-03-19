@@ -3,7 +3,6 @@ package in.oogway.plumbox.cli;
 import in.oogway.plumbox.launcher.Ingester;
 import in.oogway.plumbox.launcher.Pipeline;
 import in.oogway.plumbox.launcher.Source;
-import in.oogway.plumbox.launcher.View;
 import in.oogway.plumbox.launcher.storage.LauncherStorageDriver;
 import org.apache.commons.cli.*;
 
@@ -14,19 +13,12 @@ import java.util.Properties;
 
 public class Cli {
     private static HashMap<String, CliHandler> handlers = new HashMap<>();
-    private static Option property = null;
     private static Options options = new Options();
     private static CommandLineParser bparser = new DefaultParser();
 
     static {
-        Option opt = Option.builder("P").hasArgs()
-                .build();
-
+        Option opt = Option.builder("P").hasArgs().build();
         options.addOption(opt);
-
-        handlers.put("declare-source", (Plumbox pb, HashMap<String, String> ns) -> {
-            pb.declare(new Source(ns));
-        });
 
         handlers.put("declare-ingester", (Plumbox pb, HashMap<String, String> ns) -> {
             String source = ns.get("uri");
@@ -43,21 +35,18 @@ public class Cli {
             }
 
             pb.declare(new Ingester(
-                    ns.get("uri"),
+                    ns.get("source"),
                     ns.get("sink"),
                     ns.get("pipeline")));
         });
 
         handlers.put("declare-pipeline", (Plumbox pb, HashMap<String, String> ns) -> {
-            pb.declare(new Pipeline(
-                    ns.get("stages")));
+            pb.declare(new Pipeline(ns.get("stages").split(",")));
         });
 
         ArrayList<Class> getters = new ArrayList<Class>();
-        getters.add(Source.class);
         getters.add(Pipeline.class);
         getters.add(Ingester.class);
-        getters.add(View.class);
 
         for (Class entity: getters) {
             addGetter(entity);
