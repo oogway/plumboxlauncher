@@ -6,7 +6,7 @@ import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Ingester {
     public String source;
@@ -19,25 +19,49 @@ public class Ingester {
         this.pipeline = transformation;
     }
 
-    public void execute(LauncherStorage driver, SparkSession ss) throws IllegalAccessException, InstantiationException, ClassNotFoundException {
-        Dataset<Row> sourceData = ss.emptyDataFrame();
-
-        // There can be Pipelines that load their own data on the way. They dont need a source.
-        if (source != null && !source.equals("")) {
-            Source s = (Source) driver.read(source, Source.class);
-            sourceData = s.load(ss);
+    private Source getSource(String name) throws ClassNotFoundException, IllegalAccessException, InstantiationException {
+        if (name == null || name.equals("")) {
+            return new DefaultSource();
         }
 
-        Pipeline tr = (Pipeline) driver.read(pipeline, Pipeline.class);
-        ArrayList<Transformer> transformers = tr.inflate();
+        Class act = Class.forName(name.trim());
+        return (Source) act.newInstance();
+    }
 
-        // Run all transformations.
+    private Sink getSink(String name) throws ClassNotFoundException, IllegalAccessException, InstantiationException {
+        if (name == null || name.equals("")) {
+            return new DefaultSink();
+        }
+
+        Class act = Class.forName(name.trim());
+        return (Sink) act.newInstance();
+    }
+
+    public void execute(LauncherStorage driver, SparkSession ss) throws IllegalAccessException, InstantiationException, ClassNotFoundException {
+        this.execute(driver, ss, new HashMap<>());
+    }
+
+    public void execute(LauncherStorage driver, SparkSession ss, HashMap<String, Object> args) throws IllegalAccessException, InstantiationException, ClassNotFoundException {
+        Source s = getSource(source);
+        Sink sk = getSink(sink);
+        Pipeline pipe = (Pipeline) driver.read(pipeline, Pipeline.class);
+        Transformer[] transformers = pipe.inflate();
+
+        Dataset<Row> rows = s.load(ss, args);
+        Object watermark = s.getLastWatermark(rows);
+
+        // Run all transformations. Incrementally.
         for (Transformer t:
                 transformers) {
-            sourceData = t.run(ss, sourceData);
+            rows = t.run(ss, rows);
         }
 
-        //Sink snk = (Sink) driver.read(sink, Sink.class);
-        //snk.write(sourceData);
+        // Flush the dataset to the Sink.
+        sk.flush(ss, rows);
+
+        // If a watermark was returned by the source, write it back.
+        if (watermark != null) {
+            s.setWatermark(watermark);
+        }
     }
 }

@@ -15,7 +15,7 @@ plugins {
 }
 
 group 'in.oogway.plumbox'
-version '1.1.3'
+version '1.2.0'
 
 apply plugin: 'org.junit.platform.gradle.plugin'
 apply plugin: 'maven-publish'
