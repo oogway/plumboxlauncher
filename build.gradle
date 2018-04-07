@@ -71,6 +71,10 @@ dependencies {
     compile group: 'org.json', name: 'json', version: '20180130'
     compile 'com.google.code.gson:gson:2.8.2'
     compile group: 'commons-cli', name: 'commons-cli', version: '1.4'
+    compile 'org.apache.hadoop:hadoop-aws:2.7.3'
+
+    compile group: 'com.databricks', name: 'spark-redshift_2.10', version: '2.0.1'
+
 
 
     // JUnit Jupiter API and TestEngine implementation
