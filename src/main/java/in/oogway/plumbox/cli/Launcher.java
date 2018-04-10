@@ -26,16 +26,8 @@ public class Launcher {
             throw new IllegalArgumentException("Greedy for arguments? Launcher only supports two. ingester_id followed by JSON string");
         }
 
-        HashMap<String, Object> options = makeOptions(args[1]);
-        String appname = "Plumbox Launcher";
-
-        if (options.get("appname") != null) {
-            appname = options.get("appname").toString();
-        }
-
         SparkSession ss = SparkSession
                 .builder()
-                .appName(appname)
                 .getOrCreate();
 
         LauncherStorageDriver driver;
