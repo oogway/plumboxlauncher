@@ -28,7 +28,6 @@ public class Launcher {
 
         SparkSession ss = SparkSession
                 .builder()
-                .appName("Plumbox Launcher")
                 .getOrCreate();
 
         LauncherStorageDriver driver;
