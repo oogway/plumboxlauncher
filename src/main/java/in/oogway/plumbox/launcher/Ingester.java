@@ -9,9 +9,21 @@ import org.apache.spark.sql.SparkSession;
 import java.util.HashMap;
 
 public class Ingester {
-    public String source;
-    public String sink;
-    public String pipeline;
+    private String source;
+    private String sink;
+    private String pipeline;
+
+    public String getSourceID(){
+        return source;
+    }
+
+    public String getPipelineID() {
+        return pipeline;
+    }
+
+    public String getSinkID() {
+        return sink;
+    }
 
     public Ingester(String source, String sink, String transformation) {
         this.source = source;
@@ -19,7 +31,7 @@ public class Ingester {
         this.pipeline = transformation;
     }
 
-    private Source getSource(String name) throws ClassNotFoundException, IllegalAccessException, InstantiationException {
+    protected Source getSource(String name) throws ClassNotFoundException, IllegalAccessException, InstantiationException {
         if (name == null || name.equals("")) {
             return new DefaultSource();
         }
@@ -28,7 +40,7 @@ public class Ingester {
         return (Source) act.newInstance();
     }
 
-    private Sink getSink(String name) throws ClassNotFoundException, IllegalAccessException, InstantiationException {
+    protected Sink getSink(String name) throws ClassNotFoundException, IllegalAccessException, InstantiationException {
         if (name == null || name.equals("")) {
             return new DefaultSink();
         }
