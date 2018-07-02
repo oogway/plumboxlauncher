@@ -94,21 +94,19 @@ junitPlatform {
 }
 
 
-if (project.hasProperty("bintray_username")) {
-    bintray {
-        user = property('bintray_username')
-        key = property('bintray_password')
-        configurations = ['archives']
-        pkg {
-            publish = true
-            repo = 'Plumbox'
-            name = 'plumbox-launcher'
-            desc = "Plumbox Launcher to trigger Pipelines"
-            userOrg = 'oogway'
-            licenses = ['Apache-2.0']
-            websiteUrl = 'https://github.com/oogway/plumboxlauncher'
-            issueTrackerUrl = 'https://github.com/oogway/plumboxlauncher/issues'
-            vcsUrl = 'https://github.com/oogway/plumboxlauncher'
-        }
+bintray {
+    user = hasProperty('bintray_username') ? bintray_username : System.getenv('BINTRAY_USERNAME')
+    key = hasProperty('bintray_password') ? bintray_password : System.getenv('BINTRAY_PASSWORD')
+    configurations = ['archives']
+    pkg {
+        publish = true
+        repo = 'Plumbox'
+        name = 'plumbox-launcher'
+        desc = "Plumbox Launcher to trigger Pipelines"
+        userOrg = 'oogway'
+        licenses = ['Apache-2.0']
+        websiteUrl = 'https://github.com/oogway/plumboxlauncher'
+        issueTrackerUrl = 'https://github.com/oogway/plumboxlauncher/issues'
+        vcsUrl = 'https://github.com/oogway/plumboxlauncher'
     }
 }
